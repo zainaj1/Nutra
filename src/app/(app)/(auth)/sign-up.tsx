@@ -107,7 +107,6 @@ export default function Page() {
             </SafeAreaProvider>
         )
     }
-
     return (
         <SafeAreaProvider className="flex-1">
             <View className="flex-1 px-6">
