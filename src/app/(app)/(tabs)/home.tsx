@@ -1,6 +1,5 @@
 import { useAuth } from '@clerk/expo'
-import { ActivityIndicator, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { ActivityIndicator, Text, View } from 'react-native'
 
 
 export default function Home() {
@@ -14,5 +13,5 @@ export default function Home() {
         )
     }
 
-    return <SafeAreaView>Home</SafeAreaView>
+    return <Text>Home</Text>
 }
