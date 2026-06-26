@@ -12,8 +12,8 @@ export default function Layout() {
                     <AntDesign name="home" size={size} color={color} />
                 ),
             }} />
-            <Tabs.Screen name="plan" options={{
-                title: 'Plan',
+            <Tabs.Screen name="(setup)" options={{
+                title: 'Setup',
                 headerShown: false,
                 tabBarIcon: ({ color, size }) => (
                     <AntDesign name="plus" size={size} color={color} />
