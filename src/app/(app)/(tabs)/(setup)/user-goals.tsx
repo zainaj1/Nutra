@@ -1,7 +1,7 @@
-import { useAuth } from '@clerk/expo'
-import { Button } from '@react-navigation/elements'
-import { Link } from 'expo-router'
-import { ActivityIndicator, View } from 'react-native'
+import { useAuth } from '@clerk/expo';
+import { Link } from 'expo-router';
+import { Button } from "expo-router/react-navigation";
+import { ActivityIndicator, View } from 'react-native';
 
 
 export default function UserGoals() {
