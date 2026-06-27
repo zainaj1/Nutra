@@ -37,6 +37,8 @@ export default function Settings() {
                     <View>
                         <Pressable
                             onPress={handleSignOut}
+                            accessibilityRole="button"
+                            accessibilityLabel="Sign out"
                         >
                             <Text>Sign out</Text>
                         </Pressable>

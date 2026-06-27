@@ -1,75 +1,49 @@
 import { useAuth } from '@clerk/expo';
-import { Picker } from '@expo/ui/community/picker';
-import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
-import { Button } from "expo-router/react-navigation";
 import { useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import {
+    ActivityIndicator,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import ActivityButton from './components/activity-button';
+import GenderButton from './components/gender-button';
+import HeightPicker from './components/height-picker';
+import WeightPicker from './components/weight-picker';
+
 export default function UserMetrics() {
-    const [weight, setWeight] = useState('160 lb');
+    const [selectedGender, setSelectedGender] = useState<
+        'female' | 'male' | 'other' | null
+    >(null);
 
-    const [heightFeet, setHeightFeet] = useState('5');
-    const [heightInches, setHeightInches] = useState('11');
-    const [selectedGender, setSelectedGender] = useState<"female" | "male" | "other" | null>(null);
-
-    const weights = Array.from(
-        { length: (300 - 100) / 5 + 1 },
-        (_, index) => 100 + index * 5
-    );
-
-    const feetOptions = [4, 5, 6, 7];
-
-    const inchOptions = Array.from(
-        { length: 12 },
-        (_, index) => index
-    );
+    const [selectedActivity, setSelectedActivity] = useState<
+        'sedentary' | 'lightly_active' | 'moderately_active' | 'very_active' | null
+    >(null);
 
     const { isLoaded } = useAuth();
 
-    type GenderOption = {
-        label: string;
-        icon: React.ComponentProps<typeof Ionicons>['name'];
-        value: "female" | "male" | "other";
-    };
+    const [heightFeet, setHeightFeet] = useState('5');
+    const [heightInches, setHeightInches] = useState('11');
+    const [weight, setWeight] = useState('160 lb');
 
-    function GenderButton({
-        label,
-        icon,
-        value,
-        selected,
-        onPress,
-    }: {
-        label: string;
-        icon: React.ComponentProps<typeof Ionicons>['name'];
-        value: "female" | "male" | "other";
-        selected: boolean;
-        onPress: () => void;
-    }) {
-        return (
-            <TouchableOpacity onPress={onPress} className="rounded-xl mb-2" activeOpacity={0.8}>
-                <View
-                    className={
-                        "w-32 h-28 rounded-2xl items-center justify-center shadow-sm border " +
-                        (selected ? "bg-green-100 border-green-400" : "bg-white border-gray-100")
-                    }
-                    style={{ elevation: 4 }}
-                >
-                    <Ionicons name={icon} size={32} color={selected ? "#16a34a" : "grey"} />
+    const totalHeightInInches =
+        Number(heightFeet) * 12 + Number(heightInches);
 
-                    <Text className={"text-md mb-1 font-bold items-center " + (selected ? "text-green-700" : "text-black")}>
-                        {label}
-                    </Text>
-                </View>
-            </TouchableOpacity>
-        );
-    }
+    const canContinue =
+        selectedActivity !== null &&
+        weight !== null &&
+        weight !== '' &&
+        heightFeet !== '' &&
+        heightInches !== '';
 
     if (!isLoaded) {
         return (
-            <View className="flex-1 items-center justify-center">
-                <ActivityIndicator size="large" color="#0000ff" />
+            <View className="flex-1 items-center justify-center bg-gray-50">
+                <ActivityIndicator size="large" color="#16a34a" />
             </View>
         );
     }
@@ -77,12 +51,13 @@ export default function UserMetrics() {
     return (
         <SafeAreaProvider>
             <SafeAreaView className="flex-1 bg-gray-50">
-
-                {/* Top half of screen */}
-                <View className="h-1/2 w-full items-center justify-center px-6">
-
+                <ScrollView
+                    className="flex-1"
+                    contentContainerClassName="px-5 pt-2 pb-4"
+                    showsVerticalScrollIndicator={false}
+                >
                     {/* Header */}
-                    <View className="items-center mb-3">
+                    <View className="items-center mb-5">
                         <Text className="text-3xl font-bold text-gray-900 mb-2 text-center">
                             Tell us about yourself
                         </Text>
@@ -93,134 +68,108 @@ export default function UserMetrics() {
                     </View>
 
                     {/* Picker Boxes */}
-                    <View className="flex-row items-center justify-center gap-4">
+                    <View className="flex-row items-center justify-center gap-3 mb-3">
+                        <WeightPicker
+                            weight={weight}
+                            setWeight={setWeight}
+                        />
 
-                        {/* Weight Box */}
-                        <View
-                            className="w-48 h-60 rounded-2xl bg-white items-center justify-center shadow-sm border border-gray-100"
-                            style={{ elevation: 4 }}
-                        >
-                            <Text className="text-black text-md mb-1 font-bold">
-                                Weight
-                            </Text>
+                        <HeightPicker
+                            heightFeet={heightFeet}
+                            heightInches={heightInches}
+                            setHeightFeet={setHeightFeet}
+                            setHeightInches={setHeightInches}
+                        />
+                    </View>
 
-                            <Text className="text-xl font-bold text-green-600 mb-2">
-                                {weight}
-                            </Text>
+                    {/* Gender */}
+                    <View className="mb-3">
+                        <Text className="text-lg font-bold text-gray-900 mb-3">
+                            Gender
+                        </Text>
 
-                            {/* Divider */}
-                            <View className="w-full flex-row items-center mb-2 px-6">
-                                <View className="flex-1 h-px bg-gray-200" />
-                            </View>
+                        <View className="flex-row items-start justify-center gap-2">
+                            <GenderButton
+                                label="Female"
+                                icon="woman-outline"
+                                selected={selectedGender === "female"}
+                                onPress={() => setSelectedGender("female")}
+                            />
 
-                            <View className="w-28 h-32 overflow-hidden items-center justify-center">
-                                <Picker
-                                    selectedValue={weight}
-                                    onValueChange={(value) => setWeight(value)}
-                                    style={{ width: 120, height: 50 }}
-                                >
-                                    {weights.map((weight) => (
-                                        <Picker.Item
-                                            key={weight}
-                                            label={`${weight} lb`}
-                                            value={`${weight} lb`}
-                                        />
-                                    ))}
-                                </Picker>
-                            </View>
-                        </View>
+                            <GenderButton
+                                label="Male"
+                                icon="man-outline"
+                                selected={selectedGender === "male"}
+                                onPress={() => setSelectedGender("male")}
+                            />
 
-                        {/* Height Box */}
-                        <View
-                            className="w-48 h-60 rounded-2xl bg-white items-center justify-center shadow-sm border border-gray-100"
-                            style={{ elevation: 4 }}
-                        >
-                            <Text className="text-black text-md mb-1 font-bold">
-                                Height
-                            </Text>
-
-                            <Text className="text-xl font-bold text-green-600 mb-2">
-                                {heightFeet}'{heightInches}
-                            </Text>
-
-                            {/* Divider */}
-                            <View className="w-full flex-row items-center mb-2 px-6">
-                                <View className="flex-1 h-px bg-gray-200" />
-                            </View>
-
-                            <View className="flex-row items-center justify-center gap-2">
-
-                                {/* Feet Picker */}
-                                <View className="w-20 h-32 overflow-hidden items-center justify-center">
-                                    <Picker
-                                        selectedValue={heightFeet}
-                                        onValueChange={(value) => setHeightFeet(value)}
-                                        style={{ width: 90, height: 50 }}
-                                    >
-                                        {feetOptions.map((feet) => (
-                                            <Picker.Item
-                                                key={feet}
-                                                label={`${feet} ft`}
-                                                value={`${feet}`}
-                                            />
-                                        ))}
-                                    </Picker>
-                                </View>
-
-                                {/* Inches Picker */}
-                                <View className="w-20 h-32 overflow-hidden items-center justify-center">
-                                    <Picker
-                                        selectedValue={heightInches}
-                                        onValueChange={(value) => setHeightInches(value)}
-                                        style={{ width: 90, height: 50 }}
-                                    >
-                                        {inchOptions.map((inch) => (
-                                            <Picker.Item
-                                                key={inch}
-                                                label={`${inch} in`}
-                                                value={`${inch}`}
-                                            />
-                                        ))}
-                                    </Picker>
-                                </View>
-                            </View>
+                            <GenderButton
+                                label="Prefer not to say"
+                                icon="person-outline"
+                                selected={selectedGender === "other"}
+                                onPress={() => setSelectedGender("other")}
+                            />
                         </View>
                     </View>
-                </View>
-                {/* Middle half of screen */}
-                <View className="flex-row h-1/2 w-full items-center justify-center px-6 gap-4">
-                    <GenderButton
-                        label="Female"
-                        icon="woman-outline"
-                        value="female"
-                        selected={selectedGender === "female"}
-                        onPress={() => setSelectedGender("female")}
-                    />
 
-                    <GenderButton
-                        label="Male"
-                        icon="man-outline"
-                        value="male"
-                        selected={selectedGender === "male"}
-                        onPress={() => setSelectedGender("male")}
-                    />
+                    {/* Activity Level */}
+                    <View className="mb-4">
+                        <Text className="text-lg font-bold text-gray-900 mb-3">
+                            Activity Level
+                        </Text>
 
-                    <GenderButton
-                        label="Prefer not to say"
-                        icon="person-outline"
-                        value="other"
-                        selected={selectedGender === "other"}
-                        onPress={() => setSelectedGender("other")}
-                    />
-                </View>
+                        <View className="flex-row items-start justify-center gap-3">
+                            <ActivityButton
+                                label="Sedentary"
+                                secondaryLabel="Little or no exercise"
+                                icon="bed-outline"
+                                selected={selectedActivity === "sedentary"}
+                                onPress={() => setSelectedActivity("sedentary")}
+                            />
 
-                {/* Bottom half of screen */}
-                <View className="h-1/2 items-center justify-start">
+                            <ActivityButton
+                                label="Lightly Active"
+                                secondaryLabel="1-3 days/week"
+                                icon="flame-outline"
+                                selected={selectedActivity === "lightly_active"}
+                                onPress={() => setSelectedActivity("lightly_active")}
+                            />
+
+                            <ActivityButton
+                                label="Active"
+                                secondaryLabel="3-5 days/week"
+                                icon="flash-outline"
+                                selected={selectedActivity === "moderately_active"}
+                                onPress={() => setSelectedActivity("moderately_active")}
+                            />
+
+                            <ActivityButton
+                                label="Very Active"
+                                secondaryLabel="6-7 days/week"
+                                icon="bicycle-outline"
+                                selected={selectedActivity === "very_active"}
+                                onPress={() => setSelectedActivity("very_active")}
+                            />
+                        </View>
+                    </View>
+
+                    {/* Continue Button */}
                     <Link href="/(app)/(tabs)/(setup)/user-goals" push asChild>
-                        <Button>User Goals</Button>
+                        <TouchableOpacity
+                            activeOpacity={0.85}
+                            className="bg-green-600 rounded-2xl py-4 items-center justify-center shadow-sm"
+                            disabled={!canContinue}
+                            style={{ opacity: canContinue ? 1 : 0.5 }}
+                            accessibilityRole="button"
+                            accessibilityLabel="Continue"
+                            accessibilityState={{ disabled: !canContinue }}
+                        >
+                            <Text className="text-white font-bold text-lg">
+                                Continue
+                            </Text>
+                        </TouchableOpacity>
                     </Link>
-                </View>
-
+                </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>
     );
