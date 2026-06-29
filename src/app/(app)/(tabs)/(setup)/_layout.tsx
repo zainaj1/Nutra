@@ -1,6 +1,8 @@
 import { Stack } from 'expo-router';
 import { Text, View } from 'react-native';
 
+import { SetupUserDataProvider } from './context/setup-user-data-context';
+
 function SetupProgressHeader({
     currentStep,
     totalSteps,
@@ -29,71 +31,61 @@ function SetupProgressHeader({
 }
 
 export default function SetupLayout() {
-    const totalSteps = 4;
+    const totalSteps = 3;
 
     return (
-        <Stack
-            screenOptions={{
-                headerTitleAlign: 'center',
-                headerShadowVisible: false,
-                headerTintColor: '#16a34a',
+        <SetupUserDataProvider>
+            <Stack
+                screenOptions={{
+                    headerTitleAlign: 'center',
+                    headerShadowVisible: false,
+                    headerTintColor: '#16a34a',
 
-                headerStyle: {
-                    backgroundColor: '#f9fafb',
-                },
+                    headerStyle: {
+                        backgroundColor: '#f9fafb',
+                    },
 
-                animation: 'slide_from_right',
-                animationDuration: 250,
-                gestureEnabled: true,
-            }}
-        >
-            <Stack.Screen
-                name="user-metrics"
-                options={{
-                    headerTitle: () => (
-                        <SetupProgressHeader
-                            currentStep={1}
-                            totalSteps={totalSteps}
-                        />
-                    ),
+                    animation: 'slide_from_right',
+                    animationDuration: 250,
+                    gestureEnabled: true,
                 }}
-            />
+            >
+                <Stack.Screen
+                    name="user-metrics"
+                    options={{
+                        headerTitle: () => (
+                            <SetupProgressHeader
+                                currentStep={1}
+                                totalSteps={totalSteps}
+                            />
+                        ),
+                    }}
+                />
 
-            <Stack.Screen
-                name="user-goals"
-                options={{
-                    headerTitle: () => (
-                        <SetupProgressHeader
-                            currentStep={2}
-                            totalSteps={totalSteps}
-                        />
-                    ),
-                }}
-            />
+                <Stack.Screen
+                    name="user-goals"
+                    options={{
+                        headerTitle: () => (
+                            <SetupProgressHeader
+                                currentStep={2}
+                                totalSteps={totalSteps}
+                            />
+                        ),
+                    }}
+                />
 
-            <Stack.Screen
-                name="user-preferences"
-                options={{
-                    headerTitle: () => (
-                        <SetupProgressHeader
-                            currentStep={3}
-                            totalSteps={totalSteps}
-                        />
-                    ),
-                }}
-            />
-
-            <Stack.Screen
-                name="user-summary"
-                options={{
-                    headerTitle: () => (
-                        <SetupProgressHeader
-                            currentStep={4}
-                            totalSteps={totalSteps}
-                        />
-                    ),
-                }}
-            />
-        </Stack>
+                <Stack.Screen
+                    name="finalize-plan"
+                    options={{
+                        headerTitle: () => (
+                            <SetupProgressHeader
+                                currentStep={3}
+                                totalSteps={totalSteps}
+                            />
+                        ),
+                    }}
+                />
+            </Stack>
+        </SetupUserDataProvider>
     );
 }

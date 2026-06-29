@@ -35,7 +35,7 @@ export default function WeightBox({ title, weight, setWeight }: WeightPickerProp
     };
 
     return (
-        <View className="w-full max-w-[180px] rounded-2xl border border-gray-200 bg-white p-4">
+        <View className="flex-1 min-w-0 rounded-2xl border border-gray-200 bg-white p-4">
             <Text className="text-gray-700 font-medium">{title}</Text>
             <View className="my-3 h-px bg-gray-200" />
 
@@ -57,12 +57,12 @@ export default function WeightBox({ title, weight, setWeight }: WeightPickerProp
                     </TouchableOpacity>
                 </View>
             ) : (
-                <View className="flex-row items-center justify-between gap-2">
-                    <Text className="flex-1 text-2xl font-bold text-green-600">{weight} lb</Text>
+                <View className="gap-3">
+                    <Text className="text-2xl font-bold text-green-600">{weight} lb</Text>
                     <TouchableOpacity
                         activeOpacity={0.8}
                         onPress={() => setIsEditing(true)}
-                        className="rounded-full bg-green-50 px-3 py-1"
+                        className="self-start rounded-full bg-green-50 px-3 py-1"
                         accessibilityRole="button"
                         accessibilityLabel={`Edit ${title}`}
                     >

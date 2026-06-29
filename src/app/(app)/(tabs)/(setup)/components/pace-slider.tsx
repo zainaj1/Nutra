@@ -1,6 +1,7 @@
 import Slider from '@expo/ui/community/slider';
 import { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
+import type { DimensionValue } from 'react-native';
 
 type PaceSliderProps = {
     value: number;
@@ -19,6 +20,9 @@ const smallTicks = [
     1.5, 1.6, 1.7, 1.8, 1.9,
     2.0,
 ];
+
+const getTickPosition = (tick: number): DimensionValue =>
+    `${((tick - MIN) / (MAX - MIN)) * 100}%`;
 
 export default function PaceSlider({
     value,
@@ -93,28 +97,46 @@ export default function PaceSlider({
                 />
 
                 {/* Tick marks */}
-                <View className="absolute left-0 right-0 bottom-0 flex-row justify-between px-1 pointer-events-none">
-                    {smallTicks.map((tick) => (
-                        <View
-                            key={tick}
-                            className={
-                                "w-px rounded-full " +
-                                (tick <= value ? "bg-green-300" : "bg-gray-200") +
-                                (majorTicks.includes(tick) ? " h-3" : " h-1.5")
-                            }
-                        />
-                    ))}
+                <View className="absolute left-0 right-0 bottom-0" pointerEvents="none">
+                    {smallTicks.map((tick) => {
+                        const isMajorTick = majorTicks.includes(tick);
+
+                        return (
+                            <View
+                                key={tick}
+                                className="absolute w-4 -translate-x-2 items-center"
+                                style={{
+                                    left: getTickPosition(tick),
+                                }}
+                            >
+                                <View
+                                    className={
+                                        "w-px rounded-full " +
+                                        (tick <= value ? "bg-green-300" : "bg-gray-200") +
+                                        (isMajorTick ? " h-3" : " h-1.5")
+                                    }
+                                />
+                            </View>
+                        );
+                    })}
                 </View>
 
-                <View className="absolute left-0 right-0 bottom-[11.5px] flex-row justify-between px-0 pointer-events-none">
+                <View className="absolute left-0 right-0 bottom-[11.5px]" pointerEvents="none">
                     {majorTicks.map((tick) => (
                         <View
                             key={tick}
-                            className={
-                                "w-2 h-2 rounded-full " +
-                                (tick <= value ? "bg-green-600" : "bg-gray-400")
-                            }
-                        />
+                            className="absolute w-4 -translate-x-2 items-center"
+                            style={{
+                                left: getTickPosition(tick),
+                            }}
+                        >
+                            <View
+                                className={
+                                    "w-2 h-2 rounded-full " +
+                                    (tick <= value ? "bg-green-600" : "bg-gray-400")
+                                }
+                            />
+                        </View>
                     ))}
                 </View>
             </View>
@@ -122,14 +144,12 @@ export default function PaceSlider({
             {/* Labels */}
             <View className="relative mt-1 h-8">
                 {majorTicks.map((tick) => {
-                    const percent = ((tick - MIN) / (MAX - MIN)) * 100;
-
                     return (
                         <View
                             key={tick}
                             className="absolute w-16 -translate-x-8 items-center"
                             style={{
-                                left: `${percent}%`,
+                                left: getTickPosition(tick),
                             }}
                         >
                             <Text

@@ -25,7 +25,7 @@ export default function ActivityButton({
         >
             <View
                 className={
-                    "w-24 h-36 rounded-2xl items-center shadow-sm border px-2 py-3 " +
+                    "w-20 h-36 rounded-2xl items-center shadow-sm border px-2 py-3 " +
                     (selected
                         ? "bg-green-100 border-green-400"
                         : "bg-white border-gray-100")

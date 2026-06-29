@@ -10,6 +10,7 @@ const mockRouter = {
 jest.mock('expo-router', () => ({
   Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useRouter: () => mockRouter,
+  useLocalSearchParams: () => ({}),
 }));
 
 jest.mock('expo-router/react-navigation', () => ({
@@ -24,6 +25,13 @@ jest.mock('@expo/vector-icons', () => ({
     const { Text } = require('react-native');
     return <Text>{name}</Text>;
   },
+}));
+
+jest.mock('expo-secure-store', () => ({
+  getItemAsync: jest.fn(),
+  isAvailableAsync: jest.fn(() => Promise.resolve(true)),
+  setItemAsync: jest.fn(),
+  deleteItemAsync: jest.fn(),
 }));
 
 jest.mock('react-native-safe-area-context', () => ({
