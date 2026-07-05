@@ -27,7 +27,7 @@ export default function UserGoals() {
     const weight = Number(getParamValue(params.weight));
     const pace = Number(getParamValue(params.pace));
 
-    const { bmi, tdee, planCalories } = CalculateUserPlan({
+    const { planCalories } = CalculateUserPlan({
         activityLevel,
         gender,
         height,
@@ -39,8 +39,6 @@ export default function UserGoals() {
     });
 
     const totalWeeksToReachGoal = Math.abs(weight - goalWeight) / pace;
-    const totalMonthsToReachGoal = totalWeeksToReachGoal / 4.345;
-
     const { proteinGrams, fatGrams, carbGrams } = CalculateUserMacros(planCalories);
 
     const warningMessage = "Please note, you should consult with a healthcare professional or registered dietitian before making any significant changes to your diet or exercise routine."
@@ -53,7 +51,7 @@ export default function UserGoals() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 bg-gray-50">
+            <SafeAreaView className="flex-1 bg-setup-cream">
                 <ScrollView
                     className="flex-1"
                     contentContainerClassName="px-5 pt-2 pb-4"
@@ -62,20 +60,20 @@ export default function UserGoals() {
 
                     {/* Header Text */}
                     <View>
-                        <Text className="text-2xl font-bold text-gray-900 mb-4 text-center">
+                        <Text className="text-2xl font-bold text-setup-main mb-4 text-center">
                             Your Plan is Ready
                         </Text>
-                        <Text className="text-2sm text-gray-600 mb-4 text-center">
+                        <Text className="text-2sm text-setup-muted mb-4 text-center">
                             Here is your personalized calorie and macro guide.
                         </Text>
                     </View>
 
                     {/* Plan Overview */}
-                    <View className="flew-col gap-3 justify-center rounded-2xl border border-gray-200 bg-white px-4 py-3 mb-4 shadow-xl shadow-gray-200">
+                    <View className="flew-col gap-3 justify-center rounded-2xl border border-setup-border bg-setup-card px-4 py-3 mb-4 shadow-xl shadow-setup-border">
 
                         <View className="flex-row items-center">
-                            <Text className="font-bold"> Daily Targets </Text>
-                            <Text className="text-gray-600 text-sm"> (rough estimate ) </Text>
+                            <Text className="font-bold text-setup-main"> Daily Targets </Text>
+                            <Text className="text-setup-muted text-sm"> (rough estimate ) </Text>
                         </View>
 
                         <TargetRow
@@ -112,10 +110,10 @@ export default function UserGoals() {
                     </View>
 
                     {/* Timeline  */}
-                    <View className="flex-row gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 mb-4 shadow-xl shadow-gray-200">
+                    <View className="flex-row gap-3 rounded-2xl border border-setup-border bg-setup-card px-4 py-3 mb-4 shadow-xl shadow-setup-border">
 
                         {/* icon */}
-                        <View className="mr-2 w-16 h-16 shrink-0 rounded-full bg-setup-light items-center justify-center">
+                        <View className="mr-2 w-16 h-16 shrink-0 rounded-full bg-setup-soft items-center justify-center">
                             <Ionicons
                                 name="calendar-outline"
                                 size={30}
@@ -125,13 +123,13 @@ export default function UserGoals() {
 
                         {/* Value */}
                         <View className="flex-col">
-                            <Text className="text-md font-bold text-gray-900">
+                            <Text className="text-md font-bold text-setup-main">
                                 Expected Timeline
                             </Text>
-                            <Text className="text-xl font-bold text-gray-900 mb-0.5">
+                            <Text className="text-xl font-bold text-setup-main mb-0.5">
                                 ~{totalWeeksToReachGoal.toFixed()} weeks to goal
                             </Text>
-                            <Text className="text-gray-600">
+                            <Text className="text-setup-muted">
                                 Based on ~{pace} lb per week
                             </Text>
                         </View>
@@ -140,7 +138,7 @@ export default function UserGoals() {
 
 
                     {/* Timeline  */}
-                    <View className="flex-row gap-3 rounded-2xl border border-gray-200 bg-setup-light px-4 py-3 mb-4 shadow-xl shadow-gray-200">
+                    <View className="flex-row gap-3 rounded-2xl border border-setup-border bg-setup-soft px-4 py-3 mb-4 shadow-xl shadow-setup-border">
 
                         <Ionicons
                             name="information-circle-outline"

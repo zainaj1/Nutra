@@ -41,9 +41,9 @@ export default function WeightBox({ title, value, setValue, boundaries, defaultV
     };
 
     return (
-        <View className="w-full max-w-[180px] rounded-2xl border border-gray-200 bg-white p-4">
-            <Text className="text-gray-700 font-medium">{title}</Text>
-            <View className="my-3 h-px bg-gray-200" />
+        <View className="w-full max-w-[180px] rounded-2xl border border-setup-border bg-setup-card p-4">
+            <Text className="text-setup-muted font-medium">{title}</Text>
+            <View className="my-3 h-px bg-setup-border" />
 
             {isEditing ? (
                 <View className="gap-2">
@@ -52,7 +52,7 @@ export default function WeightBox({ title, value, setValue, boundaries, defaultV
                         onChangeText={setValue}
                         keyboardType="numeric"
                         placeholder="Enter value"
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-base text-gray-900"
+                        className="rounded-lg border border-setup-border bg-setup-cream px-3 py-2 text-base text-setup-main"
                     />
                     <TouchableOpacity
                         activeOpacity={0.85}
@@ -70,7 +70,7 @@ export default function WeightBox({ title, value, setValue, boundaries, defaultV
                     <TouchableOpacity
                         activeOpacity={0.8}
                         onPress={() => setIsEditing(true)}
-                        className="rounded-full bg-setup-light px-3 py-1"
+                        className="rounded-full bg-setup-soft px-3 py-1"
                         accessibilityRole="button"
                         accessibilityLabel={`Edit ${title}`}
                     >

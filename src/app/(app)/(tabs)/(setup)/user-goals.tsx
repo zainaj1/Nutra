@@ -52,7 +52,7 @@ export default function UserGoals() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 bg-gray-50 flex-row items-center justify-center">
+            <SafeAreaView className="flex-1 bg-setup-cream flex-row items-center justify-center">
                 <ScrollView
                     className="flex-1"
                     contentContainerClassName="px-5 pt-2 pb-4"
@@ -60,11 +60,11 @@ export default function UserGoals() {
                 >
                     {/* Header */}
                     <View className="items-center mb-5">
-                        <Text className="text-3xl font-bold text-gray-900 mb-2 text-center">
+                        <Text className="text-3xl font-bold text-setup-main mb-2 text-center">
                             {"What's you Goal?"}
                         </Text>
 
-                        <Text className="text-gray-500 text-center">
+                        <Text className="text-setup-muted text-center">
                             Choose what you ant to work towards
                         </Text>
                     </View>
@@ -84,7 +84,7 @@ export default function UserGoals() {
 
                     {/* Gender */}
                     <View className="mb-3">
-                        <Text className="text-lg font-bold text-gray-900 mb-3">
+                        <Text className="text-lg font-bold text-setup-main mb-3">
                             Pace
                         </Text>
 
@@ -94,8 +94,8 @@ export default function UserGoals() {
                     </View>
 
                     {/* Expected Pace */}
-                    <View className="flex-row mb-3 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 gap-2">
-                        <View className="mr-2 w-16 h-16 shrink-0 self-center rounded-full bg-setup-light items-center justify-center">
+                    <View className="flex-row mb-3 w-full rounded-2xl border border-setup-border bg-setup-card px-4 py-3 gap-2">
+                        <View className="mr-2 w-16 h-16 shrink-0 self-center rounded-full bg-setup-soft items-center justify-center">
                             <Ionicons
                                 name={isWeightLoss ? "trending-down-outline" : "trending-up-outline"}
                                 size={30}
@@ -104,7 +104,7 @@ export default function UserGoals() {
                         </View>
 
                         <View className="flex-1">
-                            <Text className="text-lg font-bold text-gray-900 mb-0.5">
+                            <Text className="text-lg font-bold text-setup-main mb-0.5">
                                 Expected Pace:
                             </Text>
                             <Text>
@@ -112,7 +112,7 @@ export default function UserGoals() {
                             </Text>
 
                             <View className="flex-row items-start gap-3">
-                                <Text className="text-sm text-gray-500">
+                                <Text className="text-sm text-setup-muted">
                                     {paceMessage}
                                 </Text>
                             </View>

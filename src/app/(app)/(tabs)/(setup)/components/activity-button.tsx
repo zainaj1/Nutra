@@ -28,8 +28,8 @@ export default function ActivityButton({
                 className={
                     "w-24 h-36 rounded-2xl items-center shadow-sm border px-2 py-3 " +
                     (selected
-                        ? "bg-setup-light border-setup-border"
-                        : "bg-white border-gray-100")
+                        ? "bg-setup-selected border-setup-border"
+                        : "bg-setup-card border-setup-border")
                 }
                 style={{ elevation: 4 }}
             >
@@ -37,7 +37,7 @@ export default function ActivityButton({
                     <Ionicons
                         name={icon}
                         size={30}
-                        color={selected ? setupColors.primary : setupColors.neutralIcon}
+                        color={selected ? setupColors.primary : setupColors.textMuted}
                     />
                 </View>
 
@@ -46,7 +46,7 @@ export default function ActivityButton({
                         numberOfLines={1}
                         className={
                             "text-xs font-bold text-center " +
-                            (selected ? "text-setup-dark" : "text-black")
+                            (selected ? "text-setup-dark" : "text-setup-main")
                         }
                     >
                         {label}
@@ -58,7 +58,7 @@ export default function ActivityButton({
                         numberOfLines={2}
                         className={
                             "text-xs text-center " +
-                            (selected ? "text-setup-dark" : "text-gray-500")
+                            (selected ? "text-setup-dark" : "text-setup-muted")
                         }
                     >
                         {secondaryLabel}

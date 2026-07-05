@@ -26,8 +26,8 @@ export default function GenderButton({
                 className={
                     "w-28 h-28 rounded-2xl items-center justify-center shadow-sm border px-2 " +
                     (selected
-                        ? "bg-setup-light border-setup-border"
-                        : "bg-white border-gray-100")
+                        ? "bg-setup-selected border-setup-border"
+                        : "bg-setup-card border-setup-border")
                 }
                 style={{ elevation: 4 }}
             >
@@ -35,7 +35,7 @@ export default function GenderButton({
                     <Ionicons
                         name={icon}
                         size={30}
-                        color={selected ? setupColors.primary : setupColors.neutralIcon}
+                        color={selected ? setupColors.primary : setupColors.textMuted}
                     />
                 </View>
 
@@ -43,7 +43,7 @@ export default function GenderButton({
                     numberOfLines={2}
                     className={
                         "text-sm font-bold text-center " +
-                        (selected ? "text-setup-dark" : "text-black")
+                        (selected ? "text-setup-dark" : "text-setup-main")
                     }
                 >
                     {label}

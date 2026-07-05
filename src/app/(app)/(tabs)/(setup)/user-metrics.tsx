@@ -47,7 +47,7 @@ export default function UserMetrics() {
 
     if (!isLoaded) {
         return (
-            <View className="flex-1 items-center justify-center bg-gray-50">
+            <View className="flex-1 items-center justify-center bg-setup-cream">
                 <ActivityIndicator size="large" color={setupColors.primary} />
             </View>
         );
@@ -55,7 +55,7 @@ export default function UserMetrics() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 bg-gray-50">
+            <SafeAreaView className="flex-1 bg-setup-cream">
                 <ScrollView
                     className="flex-1"
                     contentContainerClassName="px-5 pt-2 pb-4"
@@ -63,11 +63,11 @@ export default function UserMetrics() {
                 >
                     {/* Header */}
                     <View className="items-center mb-5">
-                        <Text className="text-3xl font-bold text-gray-900 mb-2 text-center">
+                        <Text className="text-3xl font-bold text-setup-main mb-2 text-center">
                             Tell us about yourself
                         </Text>
 
-                        <Text className="text-gray-500 text-center">
+                        <Text className="text-setup-muted text-center">
                             We will use this to personalize your plan.
                         </Text>
                     </View>
@@ -89,7 +89,7 @@ export default function UserMetrics() {
 
                     {/* Gender */}
                     <View className="mb-3">
-                        <Text className="text-lg font-bold text-gray-900 mb-3">
+                        <Text className="text-lg font-bold text-setup-main mb-3">
                             Age
                         </Text>
 
@@ -97,7 +97,7 @@ export default function UserMetrics() {
                             <WeightBox title="Age" value={age} setValue={setAge} defaultValue="25" boundaries={{ min: 14, max: 120 }} specialCharacters="" />
                         </View>
 
-                        <Text className="text-lg font-bold text-gray-900 mb-3">
+                        <Text className="text-lg font-bold text-setup-main mb-3">
                             Gender
                         </Text>
                         <View className="flex-row items-start justify-center gap-2">
@@ -127,7 +127,7 @@ export default function UserMetrics() {
 
                     {/* Activity Level */}
                     <View className="mb-4">
-                        <Text className="text-lg font-bold text-gray-900 mb-3">
+                        <Text className="text-lg font-bold text-setup-main mb-3">
                             Activity Level
                         </Text>
 

@@ -8,12 +8,55 @@ module.exports = {
     theme: {
         extend: {
             colors: {
+                green: {
+                    50: setupColors.soft,
+                    100: setupColors.selected,
+                    600: setupColors.primary,
+                    700: setupColors.dark,
+                },
+                olive: {
+                    400: setupColors.olive,
+                },
+                leaf: {
+                    500: setupColors.leaf,
+                },
+                cream: {
+                    50: setupColors.cream,
+                    100: setupColors.card,
+                },
+                border: {
+                    light: setupColors.border,
+                },
+                orange: {
+                    500: setupColors.orange,
+                },
+                yellow: {
+                    400: setupColors.yellow,
+                },
+                purple: {
+                    300: setupColors.purple,
+                },
                 setup: {
                     primary: setupColors.primary,
                     dark: setupColors.dark,
-                    light: setupColors.light,
+                    soft: setupColors.soft,
+                    selected: setupColors.selected,
+                    olive: setupColors.olive,
+                    leaf: setupColors.leaf,
+                    cream: setupColors.cream,
+                    card: setupColors.card,
                     border: setupColors.border,
-                    muted: setupColors.muted,
+                    main: setupColors.textMain,
+                    muted: setupColors.textMuted,
+                    textOlive: setupColors.textOlive,
+                    orange: setupColors.orange,
+                    yellow: setupColors.yellow,
+                    purple: setupColors.purple,
+                },
+                text: {
+                    main: setupColors.textMain,
+                    muted: setupColors.textMuted,
+                    olive: setupColors.textOlive,
                 },
             },
         },

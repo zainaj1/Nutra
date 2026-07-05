@@ -1,14 +1,23 @@
 {
-    "primary": "#5f7f3d",
-    "dark": "#3f5d2f",
-    "light": "#eef5e8",
-    "border": "#a8bf8f",
-    "muted": "#bfd1ad",
-    "neutralIcon": "#6b7280",
+    "primary": "#3F8F2F",
+    "dark": "#2F7D27",
+    "soft": "#F1F8EA",
+    "selected": "#E6EBD1",
+    "olive": "#929881",
+    "leaf": "#5B8934",
+    "cream": "#FCFBF9",
+    "card": "#F9F8F4",
+    "border": "#E4E4E0",
+    "textMain": "#0A0A0A",
+    "textMuted": "#65615F",
+    "textOlive": "#313128",
+    "orange": "#D95B1E",
+    "yellow": "#F4C84A",
+    "purple": "#B8A7F0",
     "planIcons": {
-        "calories": "#f97316",
-        "protein": "#5f7f3d",
-        "carbs": "#8a9a3f",
-        "fat": "#d39b13"
+        "calories": "#D95B1E",
+        "protein": "#5B8934",
+        "carbs": "#929881",
+        "fat": "#F4C84A"
     }
 }

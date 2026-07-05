@@ -84,7 +84,7 @@ export default function PaceSlider({
                     maximumValue={MAX}
                     step={STEP}
                     minimumTrackTintColor={setupColors.primary}
-                    maximumTrackTintColor="#e5e7eb"
+                    maximumTrackTintColor={setupColors.border}
                     thumbTintColor={setupColors.primary}
                     onValueChange={handleValueChange}
                     style={{
@@ -100,7 +100,7 @@ export default function PaceSlider({
                             key={tick}
                             className={
                                 "w-px rounded-full " +
-                                (tick <= value ? "bg-setup-muted" : "bg-gray-200") +
+                                (tick <= value ? "bg-setup-olive" : "bg-setup-border") +
                                 (majorTicks.includes(tick) ? " h-3" : " h-1.5")
                             }
                         />
@@ -113,7 +113,7 @@ export default function PaceSlider({
                             key={tick}
                             className={
                                 "w-2 h-2 rounded-full " +
-                                (tick <= value ? "bg-setup-primary" : "bg-gray-400")
+                                (tick <= value ? "bg-setup-primary" : "bg-setup-olive")
                             }
                         />
                     ))}
@@ -136,13 +136,13 @@ export default function PaceSlider({
                             <Text
                                 className={
                                     "text-xs font-medium text-center " +
-                                    (tick === value ? "text-setup-dark" : "text-gray-500")
+                                    (tick === value ? "text-setup-dark" : "text-setup-muted")
                                 }
                             >
                                 {tick.toFixed(1)}
                             </Text>
 
-                            <Text className="text-xs text-gray-500 text-center">
+                            <Text className="text-xs text-setup-muted text-center">
                                 lb/week
                             </Text>
                         </View>

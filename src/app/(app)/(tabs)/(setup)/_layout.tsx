@@ -17,7 +17,7 @@ function SetupProgressHeader({
                 {currentStep} of {totalSteps}
             </Text>
 
-            <View className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <View className="w-full h-2 bg-setup-border rounded-full overflow-hidden">
                 <View
                     className="h-full bg-setup-primary rounded-full"
                     style={{
@@ -40,7 +40,7 @@ export default function SetupLayout() {
                 headerTintColor: setupColors.primary,
 
                 headerStyle: {
-                    backgroundColor: '#f9fafb',
+                    backgroundColor: setupColors.cream,
                 },
 
                 animation: 'slide_from_right',
