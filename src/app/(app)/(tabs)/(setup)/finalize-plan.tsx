@@ -130,7 +130,7 @@ export default function UserGoals() {
                                 ~{totalWeeksToReachGoal.toFixed()} weeks to goal
                             </Text>
                             <Text className="text-setup-muted">
-                                Based on ~{pace} lb per week
+                                Based on ~{pace.toFixed(1)} lb per week
                             </Text>
                         </View>
 
@@ -154,28 +154,29 @@ export default function UserGoals() {
                         </View>
 
                     </View>
+                </ScrollView>
 
-                    {/* Continue Button */}
-                    <Link href={{
-                        pathname: "/(app)/(tabs)/(setup)/user-goals",
-                        params: {
-                        }
-                    }} push asChild>
+                {/* Finalize Button */}
+                <View className="px-5 pb-4">
+                    <Link replace href={{
+                        pathname: "/(app)/(tabs)/home"
+                    }} push asChild
+
+                    >
                         <TouchableOpacity
                             activeOpacity={0.85}
                             className={
-                                "bg-setup-primary rounded-2xl py-4 items-center justify-center shadow-sm "
+                                "bg-setup-primary rounded-full py-4 items-center justify-center shadow-sm"
                             }
                             accessibilityRole="button"
-                            accessibilityLabel="Continue"
+                            accessibilityLabel="Finalize Plan"
                         >
                             <Text className="text-white font-bold text-lg">
                                 Finalize Plan
                             </Text>
                         </TouchableOpacity>
                     </Link>
-
-                </ScrollView>
+                </View>
             </SafeAreaView>
         </SafeAreaProvider>
     )
