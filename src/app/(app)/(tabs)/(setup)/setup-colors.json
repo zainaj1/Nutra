@@ -1,0 +1,14 @@
+{
+    "primary": "#5f7f3d",
+    "dark": "#3f5d2f",
+    "light": "#eef5e8",
+    "border": "#a8bf8f",
+    "muted": "#bfd1ad",
+    "neutralIcon": "#6b7280",
+    "planIcons": {
+        "calories": "#f97316",
+        "protein": "#5f7f3d",
+        "carbs": "#8a9a3f",
+        "fat": "#d39b13"
+    }
+}

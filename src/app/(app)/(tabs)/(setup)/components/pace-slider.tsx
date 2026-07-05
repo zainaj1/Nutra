@@ -1,6 +1,7 @@
-import Slider from '@expo/ui/community/slider';
+import ExpoSlider from '@expo/ui/community/slider';
 import { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
+import { setupColors } from '../setup-theme';
 
 type PaceSliderProps = {
     value: number;
@@ -64,7 +65,7 @@ export default function PaceSlider({
                 {/* Bubble */}
                 {showBubble && sliderWidth > 0 && (
                     <View
-                        className="absolute top-0 bg-green-600 px-3 py-1 rounded-full z-10"
+                        className="absolute top-0 bg-setup-primary px-3 py-1 rounded-full z-10"
                         style={{
                             left: bubbleLeft,
                             transform: [{ translateX: -38 }],
@@ -77,14 +78,14 @@ export default function PaceSlider({
                 )}
 
                 {/* Slider */}
-                <Slider
+                <ExpoSlider
                     value={value}
                     minimumValue={MIN}
                     maximumValue={MAX}
                     step={STEP}
-                    minimumTrackTintColor="#16a34a"
+                    minimumTrackTintColor={setupColors.primary}
                     maximumTrackTintColor="#e5e7eb"
-                    thumbTintColor="#16a34a"
+                    thumbTintColor={setupColors.primary}
                     onValueChange={handleValueChange}
                     style={{
                         width: '100%',
@@ -99,7 +100,7 @@ export default function PaceSlider({
                             key={tick}
                             className={
                                 "w-px rounded-full " +
-                                (tick <= value ? "bg-green-300" : "bg-gray-200") +
+                                (tick <= value ? "bg-setup-muted" : "bg-gray-200") +
                                 (majorTicks.includes(tick) ? " h-3" : " h-1.5")
                             }
                         />
@@ -112,7 +113,7 @@ export default function PaceSlider({
                             key={tick}
                             className={
                                 "w-2 h-2 rounded-full " +
-                                (tick <= value ? "bg-green-600" : "bg-gray-400")
+                                (tick <= value ? "bg-setup-primary" : "bg-gray-400")
                             }
                         />
                     ))}
@@ -135,7 +136,7 @@ export default function PaceSlider({
                             <Text
                                 className={
                                     "text-xs font-medium text-center " +
-                                    (tick === value ? "text-green-700" : "text-gray-500")
+                                    (tick === value ? "text-setup-dark" : "text-gray-500")
                                 }
                             >
                                 {tick.toFixed(1)}

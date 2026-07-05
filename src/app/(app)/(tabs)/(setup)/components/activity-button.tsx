@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { setupColors } from '../setup-theme';
 
 export default function ActivityButton({
     label,
@@ -27,7 +28,7 @@ export default function ActivityButton({
                 className={
                     "w-24 h-36 rounded-2xl items-center shadow-sm border px-2 py-3 " +
                     (selected
-                        ? "bg-green-100 border-green-400"
+                        ? "bg-setup-light border-setup-border"
                         : "bg-white border-gray-100")
                 }
                 style={{ elevation: 4 }}
@@ -36,7 +37,7 @@ export default function ActivityButton({
                     <Ionicons
                         name={icon}
                         size={30}
-                        color={selected ? "#16a34a" : "grey"}
+                        color={selected ? setupColors.primary : setupColors.neutralIcon}
                     />
                 </View>
 
@@ -45,7 +46,7 @@ export default function ActivityButton({
                         numberOfLines={1}
                         className={
                             "text-xs font-bold text-center " +
-                            (selected ? "text-green-700" : "text-black")
+                            (selected ? "text-setup-dark" : "text-black")
                         }
                     >
                         {label}
@@ -57,7 +58,7 @@ export default function ActivityButton({
                         numberOfLines={2}
                         className={
                             "text-xs text-center " +
-                            (selected ? "text-green-700" : "text-gray-500")
+                            (selected ? "text-setup-dark" : "text-gray-500")
                         }
                     >
                         {secondaryLabel}

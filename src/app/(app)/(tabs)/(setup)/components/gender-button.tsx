@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { setupColors } from '../setup-theme';
 
 export default function GenderButton({
     label,
@@ -25,7 +26,7 @@ export default function GenderButton({
                 className={
                     "w-28 h-28 rounded-2xl items-center justify-center shadow-sm border px-2 " +
                     (selected
-                        ? "bg-green-100 border-green-400"
+                        ? "bg-setup-light border-setup-border"
                         : "bg-white border-gray-100")
                 }
                 style={{ elevation: 4 }}
@@ -34,7 +35,7 @@ export default function GenderButton({
                     <Ionicons
                         name={icon}
                         size={30}
-                        color={selected ? "#16a34a" : "grey"}
+                        color={selected ? setupColors.primary : setupColors.neutralIcon}
                     />
                 </View>
 
@@ -42,7 +43,7 @@ export default function GenderButton({
                     numberOfLines={2}
                     className={
                         "text-sm font-bold text-center " +
-                        (selected ? "text-green-700" : "text-black")
+                        (selected ? "text-setup-dark" : "text-black")
                     }
                 >
                     {label}

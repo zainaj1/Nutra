@@ -4,10 +4,10 @@ import { fireEvent, render } from '@testing-library/react-native/pure';
 import { useState } from 'react';
 
 import ActivityButton from '../src/app/(app)/(tabs)/(setup)/components/activity-button';
+import WeightBox from '../src/app/(app)/(tabs)/(setup)/components/edit-box';
 import GenderButton from '../src/app/(app)/(tabs)/(setup)/components/gender-button';
 import HeightPicker from '../src/app/(app)/(tabs)/(setup)/components/height-picker';
 import PaceSlider from '../src/app/(app)/(tabs)/(setup)/components/pace-slider';
-import WeightBox from '../src/app/(app)/(tabs)/(setup)/components/weight-box';
 import WeightPicker from '../src/app/(app)/(tabs)/(setup)/components/weight-picker';
 
 describe('setup form components', () => {

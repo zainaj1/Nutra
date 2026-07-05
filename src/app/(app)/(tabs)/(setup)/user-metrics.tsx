@@ -11,24 +11,26 @@ import {
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import ActivityButton from './components/activity-button';
+import WeightBox from './components/edit-box';
 import GenderButton from './components/gender-button';
 import HeightPicker from './components/height-picker';
 import WeightPicker from './components/weight-picker';
+import { ActivityLevel, Gender } from './domain/user';
+import { setupColors } from './setup-theme';
 
 export default function UserMetrics() {
-    const [selectedGender, setSelectedGender] = useState<
-        'female' | 'male' | 'other' | null
-    >(null);
-
-    const [selectedActivity, setSelectedActivity] = useState<
-        'sedentary' | 'lightly_active' | 'moderately_active' | 'very_active' | null
-    >(null);
-
     const { isLoaded } = useAuth();
 
+    const [selectedGender, setSelectedGender] = useState<
+        Gender
+    >("OTHER");
+    const [selectedActivity, setSelectedActivity] = useState<
+        ActivityLevel
+    >("SEDENTARY");
     const [heightFeet, setHeightFeet] = useState('5');
     const [heightInches, setHeightInches] = useState('11');
     const [weight, setWeight] = useState('160 lb');
+    const [age, setAge] = useState('25');
 
     const totalHeightInInches =
         Number(heightFeet) * 12 + Number(heightInches);
@@ -38,12 +40,15 @@ export default function UserMetrics() {
         weight !== null &&
         weight !== '' &&
         heightFeet !== '' &&
-        heightInches !== '';
+        heightInches !== '' &&
+        selectedGender !== null &&
+        age !== null &&
+        age !== '';
 
     if (!isLoaded) {
         return (
             <View className="flex-1 items-center justify-center bg-gray-50">
-                <ActivityIndicator size="large" color="#16a34a" />
+                <ActivityIndicator size="large" color={setupColors.primary} />
             </View>
         );
     }
@@ -85,29 +90,37 @@ export default function UserMetrics() {
                     {/* Gender */}
                     <View className="mb-3">
                         <Text className="text-lg font-bold text-gray-900 mb-3">
-                            Gender
+                            Age
                         </Text>
 
+                        <View className=" items-center justify-center mb-5">
+                            <WeightBox title="Age" value={age} setValue={setAge} defaultValue="25" boundaries={{ min: 14, max: 120 }} specialCharacters="" />
+                        </View>
+
+                        <Text className="text-lg font-bold text-gray-900 mb-3">
+                            Gender
+                        </Text>
                         <View className="flex-row items-start justify-center gap-2">
+
                             <GenderButton
                                 label="Female"
                                 icon="woman-outline"
-                                selected={selectedGender === "female"}
-                                onPress={() => setSelectedGender("female")}
+                                selected={selectedGender === "FEMALE"}
+                                onPress={() => setSelectedGender("FEMALE")}
                             />
 
                             <GenderButton
                                 label="Male"
                                 icon="man-outline"
-                                selected={selectedGender === "male"}
-                                onPress={() => setSelectedGender("male")}
+                                selected={selectedGender === "MALE"}
+                                onPress={() => setSelectedGender("MALE")}
                             />
 
                             <GenderButton
                                 label="Prefer not to say"
                                 icon="person-outline"
-                                selected={selectedGender === "other"}
-                                onPress={() => setSelectedGender("other")}
+                                selected={selectedGender === "OTHER"}
+                                onPress={() => setSelectedGender("OTHER")}
                             />
                         </View>
                     </View>
@@ -123,43 +136,54 @@ export default function UserMetrics() {
                                 label="Sedentary"
                                 secondaryLabel="Little or no exercise"
                                 icon="bed-outline"
-                                selected={selectedActivity === "sedentary"}
-                                onPress={() => setSelectedActivity("sedentary")}
+                                selected={selectedActivity === "SEDENTARY"}
+                                onPress={() => setSelectedActivity("SEDENTARY")}
                             />
 
                             <ActivityButton
                                 label="Lightly Active"
                                 secondaryLabel="1-3 days/week"
                                 icon="flame-outline"
-                                selected={selectedActivity === "lightly_active"}
-                                onPress={() => setSelectedActivity("lightly_active")}
+                                selected={selectedActivity === "LIGHTLY_ACTIVE"}
+                                onPress={() => setSelectedActivity("LIGHTLY_ACTIVE")}
                             />
 
                             <ActivityButton
                                 label="Active"
                                 secondaryLabel="3-5 days/week"
                                 icon="flash-outline"
-                                selected={selectedActivity === "moderately_active"}
-                                onPress={() => setSelectedActivity("moderately_active")}
+                                selected={selectedActivity === "MODERATELY_ACTIVE"}
+                                onPress={() => setSelectedActivity("MODERATELY_ACTIVE")}
                             />
 
                             <ActivityButton
                                 label="Very Active"
                                 secondaryLabel="6-7 days/week"
                                 icon="bicycle-outline"
-                                selected={selectedActivity === "very_active"}
-                                onPress={() => setSelectedActivity("very_active")}
+                                selected={selectedActivity === "VERY_ACTIVE"}
+                                onPress={() => setSelectedActivity("VERY_ACTIVE")}
                             />
                         </View>
                     </View>
 
                     {/* Continue Button */}
-                    <Link href="/(app)/(tabs)/(setup)/user-goals" push asChild>
+                    <Link href={{
+                        pathname: "/(app)/(tabs)/(setup)/user-goals",
+                        params: {
+                            activityLevel: selectedActivity,
+                            weight: Number(weight.split(' ')[0]),
+                            height: totalHeightInInches,
+                            gender: selectedGender,
+                            age: Number(age)
+                        }
+                    }} push asChild>
                         <TouchableOpacity
                             activeOpacity={0.85}
-                            className="bg-green-600 rounded-2xl py-4 items-center justify-center shadow-sm"
+                            className={
+                                "bg-setup-primary rounded-2xl py-4 items-center justify-center shadow-sm " +
+                                (canContinue ? "opacity-100" : "opacity-50")
+                            }
                             disabled={!canContinue}
-                            style={{ opacity: canContinue ? 1 : 0.5 }}
                             accessibilityRole="button"
                             accessibilityLabel="Continue"
                             accessibilityState={{ disabled: !canContinue }}

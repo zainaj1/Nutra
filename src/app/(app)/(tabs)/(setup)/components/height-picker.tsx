@@ -30,8 +30,8 @@ export default function HeightPicker({
                 Height
             </Text>
 
-            <Text className="text-lg font-bold text-green-600 mb-2">
-                {heightFeet}'{heightInches}
+            <Text className="text-lg font-bold text-setup-primary mb-2">
+                {`${heightFeet}'${heightInches}`}
             </Text>
 
             <View className="w-full flex-row items-center mb-2 px-5">

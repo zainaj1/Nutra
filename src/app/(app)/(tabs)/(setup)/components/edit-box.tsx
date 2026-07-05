@@ -7,29 +7,35 @@ import {
 } from 'react-native';
 
 
-type WeightPickerProps = {
+type EditBoxProps = {
     title: string;
-    weight: string;
-    setWeight: (value: string) => void;
+    value: string;
+    setValue: (value: string) => void;
+    boundaries?: {
+        min: number;
+        max: number;
+    };
+    defaultValue?: string;
+    specialCharacters?: string
 };
 
-export default function WeightBox({ title, weight, setWeight }: WeightPickerProps) {
+export default function WeightBox({ title, value, setValue, boundaries, defaultValue, specialCharacters }: EditBoxProps) {
     const [isEditing, setIsEditing] = useState(false);
-    const minWeight = 90
-    const maxWeight = 350
+    const minWeight = boundaries?.min ?? 90;
+    const maxWeight = boundaries?.max ?? 350;
 
     const clampWeight = (value: string) => {
         const numericValue = parseFloat(value);
         if (isNaN(numericValue)) {
-            return "150"; // Return the current weight if the input is not a valid number
+            return defaultValue || "150"; // Return the default value or current value if the input is not a valid number
         }
         return Math.min(Math.max(numericValue, minWeight), maxWeight).toString();
     };
 
     const handleSave = () => {
-        const nextValue = weight.trim();
+        const nextValue = value.trim();
         if (nextValue) {
-            setWeight(clampWeight(nextValue));
+            setValue(clampWeight(nextValue));
             setIsEditing(false);
         }
     };
@@ -42,31 +48,33 @@ export default function WeightBox({ title, weight, setWeight }: WeightPickerProp
             {isEditing ? (
                 <View className="gap-2">
                     <TextInput
-                        value={weight}
-                        onChangeText={setWeight}
+                        value={value}
+                        onChangeText={setValue}
                         keyboardType="numeric"
-                        placeholder="Enter weight"
+                        placeholder="Enter value"
                         className="rounded-lg border border-gray-300 px-3 py-2 text-base text-gray-900"
                     />
                     <TouchableOpacity
                         activeOpacity={0.85}
                         onPress={handleSave}
-                        className="rounded-lg bg-green-600 px-3 py-2"
+                        className="rounded-lg bg-setup-primary px-3 py-2"
                     >
                         <Text className="text-center font-semibold text-white">Save</Text>
                     </TouchableOpacity>
                 </View>
             ) : (
                 <View className="flex-row items-center justify-between gap-2">
-                    <Text className="flex-1 text-2xl font-bold text-green-600">{weight} lb</Text>
+                    <Text className="flex-1 text-2xl font-bold text-setup-primary">
+                        {value} {specialCharacters}
+                    </Text>
                     <TouchableOpacity
                         activeOpacity={0.8}
                         onPress={() => setIsEditing(true)}
-                        className="rounded-full bg-green-50 px-3 py-1"
+                        className="rounded-full bg-setup-light px-3 py-1"
                         accessibilityRole="button"
                         accessibilityLabel={`Edit ${title}`}
                     >
-                        <Text className="text-sm font-semibold text-green-600">Edit</Text>
+                        <Text className="text-sm font-semibold text-setup-primary">Edit</Text>
                     </TouchableOpacity>
                 </View>
             )}

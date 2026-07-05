@@ -21,7 +21,7 @@ export default function WeightPicker({ weight, setWeight }: WeightPickerProps) {
                 Weight
             </Text>
 
-            <Text className="text-lg font-bold text-green-600 mb-2">
+            <Text className="text-lg font-bold text-setup-primary mb-2">
                 {weight}
             </Text>
 
