@@ -1,8 +1,9 @@
 import { useAuth } from '@clerk/expo';
 import { Ionicons } from '@expo/vector-icons';
-import { Link, useLocalSearchParams } from 'expo-router';
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import SetupContinueButton from './components/setup-continue-button';
 import TargetDivider from './components/target-divider';
 import TargetRow from './components/target-row';
 import { CalculateUserMacros } from './domain/calculate-user-macros';
@@ -158,24 +159,13 @@ export default function UserGoals() {
 
                 {/* Finalize Button */}
                 <View className="px-5 pb-4">
-                    <Link replace href={{
-                        pathname: "/(app)/(tabs)/home"
-                    }} push asChild
-
-                    >
-                        <TouchableOpacity
-                            activeOpacity={0.85}
-                            className={
-                                "bg-setup-primary rounded-full py-4 items-center justify-center shadow-sm"
-                            }
-                            accessibilityRole="button"
-                            accessibilityLabel="Finalize Plan"
-                        >
-                            <Text className="text-white font-bold text-lg">
-                                Finalize Plan
-                            </Text>
-                        </TouchableOpacity>
-                    </Link>
+                    <SetupContinueButton
+                        href={{
+                            pathname: "/(app)/(tabs)/home"
+                        }}
+                        label="Finalize Plan"
+                        replace
+                    />
                 </View>
             </SafeAreaView>
         </SafeAreaProvider>

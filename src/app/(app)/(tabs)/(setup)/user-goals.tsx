@@ -1,17 +1,17 @@
 import { useAuth } from '@clerk/expo';
 import { Ionicons } from '@expo/vector-icons';
-import { Link, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {
     ActivityIndicator,
     ScrollView,
     Text,
-    TouchableOpacity,
     View
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import WeightBox from './components/edit-box';
 import PaceSlider from './components/pace-slider';
+import SetupContinueButton from './components/setup-continue-button';
 import { ActivityLevel, Gender } from './domain/user';
 import { setupColors } from './setup-theme';
 
@@ -52,7 +52,7 @@ export default function UserGoals() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 bg-setup-cream flex-row items-center justify-center">
+            <SafeAreaView className="flex-1 bg-setup-cream flex-col justify-center">
                 <ScrollView
                     className="flex-1"
                     contentContainerClassName="px-5 pt-2 pb-4"
@@ -119,37 +119,25 @@ export default function UserGoals() {
                         </View>
                     </View>
 
-                    {/* Continue Button */}
-                    <Link href={{
-                        pathname: "/(app)/(tabs)/(setup)/finalize-plan",
-                        params: {
-                            activityLevel: activtyLevel,
-                            gender,
-                            height,
-                            age,
-                            isWeightLoss: String(isWeightLoss),
-                            "goal-weight": goalWeight,
-                            weight,
-                            pace,
-                        },
-                    }} push asChild>
-                        <TouchableOpacity
-                            activeOpacity={0.85}
-                            className={
-                                "bg-setup-primary rounded-2xl py-4 items-center justify-center shadow-sm " +
-                                (canContinue ? "opacity-100" : "opacity-50")
-                            }
-                            disabled={!canContinue}
-                            accessibilityRole="button"
-                            accessibilityLabel="Continue"
-                            accessibilityState={{ disabled: !canContinue }}
-                        >
-                            <Text className="text-white font-bold text-lg">
-                                Continue
-                            </Text>
-                        </TouchableOpacity>
-                    </Link>
                 </ScrollView>
+                <View className="px-5 py-4">
+                    <SetupContinueButton
+                        href={{
+                            pathname: "/(app)/(tabs)/(setup)/finalize-plan",
+                            params: {
+                                activityLevel: activtyLevel,
+                                gender,
+                                height,
+                                age,
+                                isWeightLoss: String(isWeightLoss),
+                                "goal-weight": goalWeight,
+                                weight,
+                                pace,
+                            },
+                        }}
+                        disabled={!canContinue}
+                    />
+                </View>
             </SafeAreaView>
         </SafeAreaProvider>
     );

@@ -1,11 +1,9 @@
 import { useAuth } from '@clerk/expo';
-import { Link } from 'expo-router';
 import { useState } from 'react';
 import {
     ActivityIndicator,
     ScrollView,
     Text,
-    TouchableOpacity,
     View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -14,6 +12,7 @@ import ActivityButton from './components/activity-button';
 import WeightBox from './components/edit-box';
 import GenderButton from './components/gender-button';
 import HeightPicker from './components/height-picker';
+import SetupContinueButton from './components/setup-continue-button';
 import WeightPicker from './components/weight-picker';
 import { ActivityLevel, Gender } from './domain/user';
 import { setupColors } from './setup-theme';
@@ -166,34 +165,22 @@ export default function UserMetrics() {
                         </View>
                     </View>
 
-                    {/* Continue Button */}
-                    <Link href={{
-                        pathname: "/(app)/(tabs)/(setup)/user-goals",
-                        params: {
-                            activityLevel: selectedActivity,
-                            weight: Number(weight.split(' ')[0]),
-                            height: totalHeightInInches,
-                            gender: selectedGender,
-                            age: Number(age)
-                        }
-                    }} push asChild>
-                        <TouchableOpacity
-                            activeOpacity={0.85}
-                            className={
-                                "bg-setup-primary rounded-2xl py-4 items-center justify-center shadow-sm " +
-                                (canContinue ? "opacity-100" : "opacity-50")
-                            }
-                            disabled={!canContinue}
-                            accessibilityRole="button"
-                            accessibilityLabel="Continue"
-                            accessibilityState={{ disabled: !canContinue }}
-                        >
-                            <Text className="text-white font-bold text-lg">
-                                Continue
-                            </Text>
-                        </TouchableOpacity>
-                    </Link>
                 </ScrollView>
+                <View className="px-5 pb-4">
+                    <SetupContinueButton
+                        href={{
+                            pathname: "/(app)/(tabs)/(setup)/user-goals",
+                            params: {
+                                activityLevel: selectedActivity,
+                                weight: Number(weight.split(' ')[0]),
+                                height: totalHeightInInches,
+                                gender: selectedGender,
+                                age: Number(age)
+                            }
+                        }}
+                        disabled={!canContinue}
+                    />
+                </View>
             </SafeAreaView>
         </SafeAreaProvider>
     );
