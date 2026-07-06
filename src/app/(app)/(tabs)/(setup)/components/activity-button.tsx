@@ -18,7 +18,7 @@ export default function ActivityButton({
     return (
         <TouchableOpacity
             onPress={onPress}
-            className="rounded-xl"
+            className="w-[23%] rounded-xl"
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel={label}
@@ -26,7 +26,7 @@ export default function ActivityButton({
         >
             <View
                 className={
-                    "w-24 h-36 rounded-2xl items-center shadow-sm border px-2 py-3 " +
+                    "w-full h-36 rounded-2xl items-center shadow-sm border shadow-xl shadow-setup-border px-2 py-3 " +
                     (selected
                         ? "bg-setup-selected border-setup-border"
                         : "bg-setup-card border-setup-border")
@@ -43,7 +43,7 @@ export default function ActivityButton({
 
                 <View className="h-8 w-full items-center justify-center">
                     <Text
-                        numberOfLines={1}
+                        numberOfLines={2}
                         className={
                             "text-xs font-bold text-center " +
                             (selected ? "text-setup-dark" : "text-setup-main")

@@ -17,9 +17,10 @@ type EditBoxProps = {
     };
     defaultValue?: string;
     specialCharacters?: string
+    className?: string;
 };
 
-export default function WeightBox({ title, value, setValue, boundaries, defaultValue, specialCharacters }: EditBoxProps) {
+export default function EditBox({ title, value, setValue, boundaries, defaultValue, specialCharacters, className = "w-full max-w-[180px]" }: EditBoxProps) {
     const [isEditing, setIsEditing] = useState(false);
     const minWeight = boundaries?.min ?? 90;
     const maxWeight = boundaries?.max ?? 350;
@@ -41,7 +42,7 @@ export default function WeightBox({ title, value, setValue, boundaries, defaultV
     };
 
     return (
-        <View className="w-full max-w-[180px] rounded-2xl border border-setup-border bg-setup-card p-4">
+        <View className={"rounded-2xl border border-setup-border p-4 bg-setup-card shadow-xl shadow-setup-border " + className}>
             <Text className="text-setup-muted font-medium">{title}</Text>
             <View className="my-3 h-px bg-setup-border" />
 
@@ -63,8 +64,8 @@ export default function WeightBox({ title, value, setValue, boundaries, defaultV
                     </TouchableOpacity>
                 </View>
             ) : (
-                <View className="flex-row items-center justify-between gap-2">
-                    <Text className="flex-1 text-2xl font-bold text-setup-primary">
+                <View className="flex-row items-center justify-between gap-2 bg-setup-card">
+                    <Text className="flex-1 text-xl font-bold text-setup-primary">
                         {value} {specialCharacters}
                     </Text>
                     <TouchableOpacity

@@ -4,21 +4,39 @@ import { Text, View } from 'react-native';
 type WeightPickerProps = {
     weight: string;
     setWeight: (value: string) => void;
+    className?: string;
+    title?: string;
+    options?: string[];
+    pickerWidth?: number;
 };
 
-export default function WeightPicker({ weight, setWeight }: WeightPickerProps) {
-    const weightOptions = Array.from(
-        { length: (300 - 100) / 5 + 1 },
-        (_, index) => 100 + index * 5
-    );
+const PICKER_ITEM_STYLE = { fontSize: 14 };
+
+const defaultWeightOptions = Array.from(
+    { length: (300 - 100) / 5 + 1 },
+    (_, index) => `${100 + index * 5} lb`
+);
+
+export default function WeightPicker({
+    weight,
+    setWeight,
+    className = "w-28 h-48",
+    title = "Weight",
+    options = defaultWeightOptions,
+    pickerWidth = 105,
+}: WeightPickerProps) {
+    const pickerContainerWidth = pickerWidth <= 90 ? "w-20" : "w-24";
 
     return (
         <View
-            className="w-40 h-56 rounded-2xl bg-setup-card items-center justify-center shadow-sm border border-setup-border"
+            className={
+                "rounded-2xl bg-setup-card items-center justify-center shadow-xl shadow-setup-border border border-setup-border " +
+                className
+            }
             style={{ elevation: 4 }}
         >
             <Text className="text-setup-main text-sm mb-1 font-bold">
-                Weight
+                {title}
             </Text>
 
             <Text className="text-lg font-bold text-setup-primary mb-2">
@@ -29,17 +47,18 @@ export default function WeightPicker({ weight, setWeight }: WeightPickerProps) {
                 <View className="flex-1 h-px bg-setup-border" />
             </View>
 
-            <View className="w-28 h-28 overflow-hidden items-center justify-center">
+            <View className={`${pickerContainerWidth} h-28 overflow-hidden items-center justify-center`}>
                 <Picker
                     selectedValue={weight}
                     onValueChange={(value) => setWeight(String(value))}
-                    style={{ width: 115, height: 50 }}
+                    style={{ width: pickerWidth, height: 50 }}
                 >
-                    {weightOptions.map((weight) => (
+                    {options.map((option) => (
                         <Picker.Item
-                            key={weight}
-                            label={`${weight} lb`}
-                            value={`${weight} lb`}
+                            key={option}
+                            label={option}
+                            value={option}
+                            style={PICKER_ITEM_STYLE}
                         />
                     ))}
                 </Picker>

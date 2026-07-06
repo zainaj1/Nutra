@@ -60,11 +60,12 @@ describe('setup form components', () => {
       return (
         <WeightBox
           title="Current Weight"
-          weight={weight}
-          setWeight={(value) => {
+          value={weight}
+          setValue={(value: string) => {
             setWeight(value);
             onWeightChange(value);
           }}
+          specialCharacters="lb"
         />
       );
     }

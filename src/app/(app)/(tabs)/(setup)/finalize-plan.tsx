@@ -1,19 +1,19 @@
 import { useAuth } from '@clerk/expo';
 import { Ionicons } from '@expo/vector-icons';
+import { File, Paths } from 'expo-file-system';
 import { useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import SetupContinueButton from './components/setup-continue-button';
 import TargetDivider from './components/target-divider';
 import TargetRow from './components/target-row';
-import { CalculateUserMacros } from './domain/calculate-user-macros';
-import CalculateUserPlan from './domain/calculate-user-plan';
-import { ActivityLevel, Gender } from './domain/user';
+import { ActivityLevel, Gender, User, UserGoal } from './domain/user';
+import UserPlan from './domain/user-plan';
 import { setupColors } from './setup-theme';
 
 
 
-export default function UserGoals() {
+export default function FinalizePlan() {
     const params = useLocalSearchParams();
     const { isLoaded } = useAuth()
     const getParamValue = (value: string | string[] | undefined) => (
@@ -28,19 +28,20 @@ export default function UserGoals() {
     const weight = Number(getParamValue(params.weight));
     const pace = Number(getParamValue(params.pace));
 
-    const { planCalories } = CalculateUserPlan({
+    const userData: User = {
         activityLevel,
         gender,
         height,
         age,
         weight
-    }, {
+    };
+
+    const userGoal: UserGoal = {
         goalWeight,
         pace,
-    });
+    };
 
-    const totalWeeksToReachGoal = Math.abs(weight - goalWeight) / pace;
-    const { proteinGrams, fatGrams, carbGrams } = CalculateUserMacros(planCalories);
+    const userPlan = UserPlan.from(userData, userGoal);
 
     const warningMessage = "Please note, you should consult with a healthcare professional or registered dietitian before making any significant changes to your diet or exercise routine."
     if (!isLoaded) {
@@ -50,27 +51,44 @@ export default function UserGoals() {
         )
     }
 
+    function savePlan() {
+        try {
+            const file = new File(Paths.document, 'user-plan.json');
+            if (!file.exists) {
+                file.create();
+            }
+
+            file.write(JSON.stringify({
+                user: userData,
+                goal: userGoal,
+                plan: userPlan,
+            }));
+        } catch (error) {
+            console.error('Error saving user data:', error);
+        }
+    }
+
     return (
         <SafeAreaProvider>
             <SafeAreaView className="flex-1 bg-setup-cream">
                 <ScrollView
                     className="flex-1"
-                    contentContainerClassName="px-5 pt-2 pb-4"
+                    contentContainerClassName="px-5 pt-4 pb-6"
                     showsVerticalScrollIndicator={false}
                 >
 
                     {/* Header Text */}
-                    <View>
-                        <Text className="text-2xl font-bold text-setup-main mb-4 text-center">
+                    <View className="items-center mb-6">
+                        <Text className="text-3xl font-bold text-setup-main mb-2 text-center">
                             Your Plan is Ready
                         </Text>
-                        <Text className="text-2sm text-setup-muted mb-4 text-center">
+                        <Text className="text-sm text-setup-muted text-center">
                             Here is your personalized calorie and macro guide.
                         </Text>
                     </View>
 
                     {/* Plan Overview */}
-                    <View className="flew-col gap-3 justify-center rounded-2xl border border-setup-border bg-setup-card px-4 py-3 mb-4 shadow-xl shadow-setup-border">
+                    <View className="flex-col gap-3 justify-center rounded-2xl border border-setup-border bg-setup-card px-4 py-4 mb-4 shadow-xl shadow-setup-border">
 
                         <View className="flex-row items-center">
                             <Text className="font-bold text-setup-main"> Daily Targets </Text>
@@ -81,7 +99,7 @@ export default function UserGoals() {
                             iconName="flame"
                             iconColor={setupColors.planIcons.calories}
                             targetLabel="Calories"
-                            targetValue={planCalories.toFixed(0)}
+                            targetValue={userPlan.planCalories.toFixed(0)}
                             targetSubValue="kcal/day"
                         />
                         <TargetDivider />
@@ -89,7 +107,7 @@ export default function UserGoals() {
                             iconName="fish"
                             iconColor={setupColors.planIcons.protein}
                             targetLabel="Protein"
-                            targetValue={proteinGrams.toFixed(0)}
+                            targetValue={userPlan.proteinGrams.toFixed(0)}
                             targetSubValue="g/day"
                         />
                         <TargetDivider />
@@ -97,7 +115,7 @@ export default function UserGoals() {
                             iconName="leaf"
                             iconColor={setupColors.planIcons.carbs}
                             targetLabel="Carbs"
-                            targetValue={carbGrams.toFixed(0)}
+                            targetValue={userPlan.carbGrams.toFixed(0)}
                             targetSubValue="g/day"
                         />
                         <TargetDivider />
@@ -105,13 +123,13 @@ export default function UserGoals() {
                             iconName="water"
                             iconColor={setupColors.planIcons.fat}
                             targetLabel="Fat"
-                            targetValue={fatGrams.toFixed(0)}
+                            targetValue={userPlan.fatGrams.toFixed(0)}
                             targetSubValue="g/day"
                         />
                     </View>
 
                     {/* Timeline  */}
-                    <View className="flex-row gap-3 rounded-2xl border border-setup-border bg-setup-card px-4 py-3 mb-4 shadow-xl shadow-setup-border">
+                    <View className="flex-row gap-3 rounded-2xl border border-setup-border bg-setup-card px-4 py-4 mb-4 shadow-xl shadow-setup-border">
 
                         {/* icon */}
                         <View className="mr-2 w-16 h-16 shrink-0 rounded-full bg-setup-soft items-center justify-center">
@@ -128,7 +146,7 @@ export default function UserGoals() {
                                 Expected Timeline
                             </Text>
                             <Text className="text-xl font-bold text-setup-main mb-0.5">
-                                ~{totalWeeksToReachGoal.toFixed()} weeks to goal
+                                ~{userPlan.totalWeeksToReachGoal.toFixed()} weeks to goal
                             </Text>
                             <Text className="text-setup-muted">
                                 Based on ~{pace.toFixed(1)} lb per week
@@ -138,8 +156,8 @@ export default function UserGoals() {
                     </View>
 
 
-                    {/* Timeline  */}
-                    <View className="flex-row gap-3 rounded-2xl border border-setup-border bg-setup-soft px-4 py-3 mb-4 shadow-xl shadow-setup-border">
+                    {/* Warning message  */}
+                    <View className="flex-row gap-3 rounded-2xl border border-setup-border bg-setup-soft px-4 py-4 mb-2 shadow-sm shadow-setup-border">
 
                         <Ionicons
                             name="information-circle-outline"
@@ -158,13 +176,14 @@ export default function UserGoals() {
                 </ScrollView>
 
                 {/* Finalize Button */}
-                <View className="px-5 pb-4">
+                <View className="px-5 pt-3 pb-4">
                     <SetupContinueButton
                         href={{
                             pathname: "/(app)/(tabs)/home"
                         }}
                         label="Finalize Plan"
                         replace
+                        onPress={savePlan}
                     />
                 </View>
             </SafeAreaView>

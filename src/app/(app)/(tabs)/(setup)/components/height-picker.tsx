@@ -6,13 +6,17 @@ type HeightPickerProps = {
     heightInches: string;
     setHeightFeet: (value: string) => void;
     setHeightInches: (value: string) => void;
+    className?: string;
 };
+
+const PICKER_ITEM_STYLE = { fontSize: 14 };
 
 export default function HeightPicker({
     heightFeet,
     heightInches,
     setHeightFeet,
     setHeightInches,
+    className = "w-28 h-48",
 }: HeightPickerProps) {
     const feetOptions = [4, 5, 6, 7];
 
@@ -23,7 +27,11 @@ export default function HeightPicker({
 
     return (
         <View
-            className="w-40 h-56 rounded-2xl bg-setup-card items-center justify-center shadow-sm border border-setup-border"
+            className={
+                "rounded-2xl bg-setup-card items-center justify-center shadow-xl shadow-setup-border border border-setup-border " +
+                className
+            }
+
             style={{ elevation: 4 }}
         >
             <Text className="text-setup-main text-sm mb-1 font-bold">
@@ -39,33 +47,35 @@ export default function HeightPicker({
             </View>
 
             <View className="flex-row items-center justify-center gap-1">
-                <View className="w-16 h-28 overflow-hidden items-center justify-center">
+                <View className="w-12 h-28 overflow-hidden items-center justify-center">
                     <Picker
                         selectedValue={heightFeet}
                         onValueChange={(value) => setHeightFeet(String(value))}
-                        style={{ width: 80, height: 50 }}
+                        style={{ width: 70, height: 50 }}
                     >
                         {feetOptions.map((feet) => (
                             <Picker.Item
                                 key={feet}
                                 label={`${feet} ft`}
                                 value={`${feet}`}
+                                style={PICKER_ITEM_STYLE}
                             />
                         ))}
                     </Picker>
                 </View>
 
-                <View className="w-16 h-28 overflow-hidden items-center justify-center">
+                <View className="w-12 h-28 overflow-hidden items-center justify-center">
                     <Picker
                         selectedValue={heightInches}
                         onValueChange={(value) => setHeightInches(String(value))}
-                        style={{ width: 80, height: 50 }}
+                        style={{ width: 70, height: 50 }}
                     >
                         {inchOptions.map((inch) => (
                             <Picker.Item
                                 key={inch}
                                 label={`${inch} in`}
                                 value={`${inch}`}
+                                style={PICKER_ITEM_STYLE}
                             />
                         ))}
                     </Picker>

@@ -9,13 +9,17 @@ import {
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import ActivityButton from './components/activity-button';
-import WeightBox from './components/edit-box';
 import GenderButton from './components/gender-button';
 import HeightPicker from './components/height-picker';
 import SetupContinueButton from './components/setup-continue-button';
 import WeightPicker from './components/weight-picker';
 import { ActivityLevel, Gender } from './domain/user';
 import { setupColors } from './setup-theme';
+
+const ageOptions = Array.from(
+    { length: 120 - 14 + 1 },
+    (_, index) => `${14 + index}`
+);
 
 export default function UserMetrics() {
     const { isLoaded } = useAuth();
@@ -57,25 +61,35 @@ export default function UserMetrics() {
             <SafeAreaView className="flex-1 bg-setup-cream">
                 <ScrollView
                     className="flex-1"
-                    contentContainerClassName="px-5 pt-2 pb-4"
+                    contentContainerClassName="px-5 pt-4 pb-6"
                     showsVerticalScrollIndicator={false}
                 >
                     {/* Header */}
-                    <View className="items-center mb-5">
+                    <View className="items-center mb-6">
                         <Text className="text-3xl font-bold text-setup-main mb-2 text-center">
                             Tell us about yourself
                         </Text>
 
-                        <Text className="text-setup-muted text-center">
+                        <Text className="text-sm text-setup-muted text-center">
                             We will use this to personalize your plan.
                         </Text>
                     </View>
 
                     {/* Picker Boxes */}
-                    <View className="flex-row items-center justify-center gap-3 mb-3">
+                    <View className="flex-row items-center justify-between gap-2 mb-6">
                         <WeightPicker
                             weight={weight}
                             setWeight={setWeight}
+                            className="flex-1 h-48 min-w-0"
+                        />
+
+                        <WeightPicker
+                            title="Age"
+                            weight={age}
+                            setWeight={setAge}
+                            options={ageOptions}
+                            pickerWidth={95}
+                            className="flex-1 h-48 min-w-0"
                         />
 
                         <HeightPicker
@@ -83,23 +97,16 @@ export default function UserMetrics() {
                             heightInches={heightInches}
                             setHeightFeet={setHeightFeet}
                             setHeightInches={setHeightInches}
+                            className="flex-1 h-48 min-w-0"
                         />
                     </View>
 
                     {/* Gender */}
-                    <View className="mb-3">
-                        <Text className="text-lg font-bold text-setup-main mb-3">
-                            Age
-                        </Text>
-
-                        <View className=" items-center justify-center mb-5">
-                            <WeightBox title="Age" value={age} setValue={setAge} defaultValue="25" boundaries={{ min: 14, max: 120 }} specialCharacters="" />
-                        </View>
-
-                        <Text className="text-lg font-bold text-setup-main mb-3">
+                    <View className="mb-6">
+                        <Text className="px-1 text-lg font-bold text-setup-main mb-3">
                             Gender
                         </Text>
-                        <View className="flex-row items-start justify-center gap-2">
+                        <View className="flex-row items-center justify-between gap-2">
 
                             <GenderButton
                                 label="Female"
@@ -125,12 +132,12 @@ export default function UserMetrics() {
                     </View>
 
                     {/* Activity Level */}
-                    <View className="mb-4">
-                        <Text className="text-lg font-bold text-setup-main mb-3">
+                    <View className="mb-2">
+                        <Text className="px-1 text-lg font-bold text-setup-main mb-3">
                             Activity Level
                         </Text>
 
-                        <View className="flex-row items-start justify-center gap-3">
+                        <View className="flex-row flex-wrap items-start justify-between gap-y-3">
                             <ActivityButton
                                 label="Sedentary"
                                 secondaryLabel="Little or no exercise"
@@ -166,7 +173,7 @@ export default function UserMetrics() {
                     </View>
 
                 </ScrollView>
-                <View className="px-5 pb-4">
+                <View className="px-5 pt-3 pb-4">
                     <SetupContinueButton
                         href={{
                             pathname: "/(app)/(tabs)/(setup)/user-goals",

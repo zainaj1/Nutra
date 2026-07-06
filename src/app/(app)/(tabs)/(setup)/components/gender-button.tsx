@@ -16,7 +16,7 @@ export default function GenderButton({
     return (
         <TouchableOpacity
             onPress={onPress}
-            className="rounded-xl"
+            className="w-[31%] rounded-xl"
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel={label}
@@ -24,7 +24,7 @@ export default function GenderButton({
         >
             <View
                 className={
-                    "w-28 h-28 rounded-2xl items-center justify-center shadow-sm border px-2 " +
+                    "w-full h-28 rounded-2xl items-center justify-center shadow-xl shadow-setup-border border px-2 " +
                     (selected
                         ? "bg-setup-selected border-setup-border"
                         : "bg-setup-card border-setup-border")

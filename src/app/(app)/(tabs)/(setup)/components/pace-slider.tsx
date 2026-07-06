@@ -55,9 +55,9 @@ export default function PaceSlider({
     };
 
     return (
-        <View className="w-full px-2">
+        <View className="w-full px-1">
             <View
-                className="relative w-full pt-10"
+                className="relative w-full pt-8"
                 onLayout={(event) => {
                     setSliderWidth(event.nativeEvent.layout.width);
                 }}
@@ -121,7 +121,7 @@ export default function PaceSlider({
             </View>
 
             {/* Labels */}
-            <View className="relative mt-1 h-8">
+            <View className="relative mt-2 h-8">
                 {majorTicks.map((tick) => {
                     const percent = ((tick - MIN) / (MAX - MIN)) * 100;
 

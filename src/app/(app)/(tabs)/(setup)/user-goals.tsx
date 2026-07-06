@@ -9,7 +9,7 @@ import {
     View
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import WeightBox from './components/edit-box';
+import EditBox from './components/edit-box';
 import PaceSlider from './components/pace-slider';
 import SetupContinueButton from './components/setup-continue-button';
 import { ActivityLevel, Gender } from './domain/user';
@@ -25,7 +25,7 @@ export default function UserGoals() {
     const { isLoaded } = useAuth()
     const [weight, setWeight] = useState(useLocalSearchParams().weight as string);
     const [goalWeight, setGoalWeight] = useState('150');
-    const [pace, setPace] = useState(0.5);
+    const [pace, setPace] = useState(1.0);
 
     const displayedPace = pace.toFixed(1);
     const isWeightLoss = parseFloat(goalWeight) < parseFloat(weight);
@@ -52,50 +52,64 @@ export default function UserGoals() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 bg-setup-cream flex-col justify-center">
+            <SafeAreaView className="flex-1 bg-setup-cream">
                 <ScrollView
                     className="flex-1"
-                    contentContainerClassName="px-5 pt-2 pb-4"
+                    contentContainerClassName="px-5 pt-4 pb-6"
                     showsVerticalScrollIndicator={false}
                 >
                     {/* Header */}
-                    <View className="items-center mb-5">
+                    <View className="items-center mb-6">
                         <Text className="text-3xl font-bold text-setup-main mb-2 text-center">
-                            {"What's you Goal?"}
+                            {"What's your goal?"}
                         </Text>
 
-                        <Text className="text-setup-muted text-center">
-                            Choose what you ant to work towards
+                        <Text className="text-sm text-setup-muted text-center">
+                            Choose what you want to work towards.
                         </Text>
                     </View>
 
                     {/* Weight Boxes */}
-                    <View className="flex-row items-center justify-center mb-3">
-                        <WeightBox title="Current Weight" value={weight} setValue={setWeight} specialCharacters="lb" />
-                        <View className="rounded-full">
+                    <View className="flex-row items-center justify-between gap-2 mb-6">
+                        <EditBox
+                            title="Current Weight"
+                            value={weight}
+                            setValue={setWeight}
+                            specialCharacters="lb"
+                            className="flex-1 min-w-0"
+                        />
+                        <View className="rounded-full bg-setup-soft p-2">
                             <Ionicons
                                 name="arrow-forward-outline"
                                 size={24}
-                                color="#000"
+                                color={setupColors.textOlive}
                             />
                         </View>
-                        <WeightBox title="Goal Weight" value={goalWeight} setValue={setGoalWeight} specialCharacters="lb" />
+                        <EditBox
+                            title="Goal Weight"
+                            value={goalWeight}
+                            setValue={setGoalWeight}
+                            specialCharacters="lb"
+                            className="flex-1 min-w-0"
+                        />
                     </View>
 
-                    {/* Gender */}
-                    <View className="mb-3">
-                        <Text className="text-lg font-bold text-setup-main mb-3">
-                            Pace
-                        </Text>
+                    {/* Pace */}
+                    <View className="mb-4">
+                        <View className="rounded-2xl bg-setup-card px-4 pt-3 pb-4 shadow-sm shadow-setup-border">
+                            <Text className="text-lg font-bold text-setup-main mb-1">
+                                Pace
+                            </Text>
 
-                        <View className="flex-row items-start justify-center gap-2">
-                            <PaceSlider value={pace} onValueChange={setPace} />
+                            <View className="px-2">
+                                <PaceSlider value={pace} onValueChange={setPace} />
+                            </View>
                         </View>
                     </View>
 
                     {/* Expected Pace */}
-                    <View className="flex-row mb-3 w-full rounded-2xl border border-setup-border bg-setup-card px-4 py-3 gap-2">
-                        <View className="mr-2 w-16 h-16 shrink-0 self-center rounded-full bg-setup-soft items-center justify-center">
+                    <View className="flex-row mb-2 w-full rounded-2xl bg-setup-soft px-4 py-4 gap-2 shadow-sm shadow-setup-border">
+                        <View className="mr-2 w-16 h-16 shrink-0 self-center rounded-full items-center justify-center">
                             <Ionicons
                                 name={isWeightLoss ? "trending-down-outline" : "trending-up-outline"}
                                 size={30}
@@ -107,12 +121,12 @@ export default function UserGoals() {
                             <Text className="text-lg font-bold text-setup-main mb-0.5">
                                 Expected Pace:
                             </Text>
-                            <Text>
+                            <Text className="mb-2 text-base font-semibold text-setup-main">
                                 {isWeightLoss ? "-" : ""} {displayedPace} lb/week
                             </Text>
 
-                            <View className="flex-row items-start gap-3">
-                                <Text className="text-sm text-setup-muted">
+                            <View className="flex-row items-start">
+                                <Text className="text-sm leading-5 text-setup-muted">
                                     {paceMessage}
                                 </Text>
                             </View>
@@ -120,7 +134,7 @@ export default function UserGoals() {
                     </View>
 
                 </ScrollView>
-                <View className="px-5 py-4">
+                <View className="px-5 pt-3 pb-4">
                     <SetupContinueButton
                         href={{
                             pathname: "/(app)/(tabs)/(setup)/finalize-plan",
