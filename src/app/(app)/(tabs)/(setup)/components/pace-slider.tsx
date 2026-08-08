@@ -1,7 +1,7 @@
 import ExpoSlider from '@expo/ui/community/slider';
 import { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
-import { setupColors } from '../setup-theme';
+import { setupColors } from '../../../domain/setup-theme';
 
 type PaceSliderProps = {
     value: number;

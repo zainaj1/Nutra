@@ -1,86 +1,35 @@
-import { useAuth } from '@clerk/expo';
-import { File, Paths } from 'expo-file-system';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { useUser } from '@clerk/expo';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { cssInterop } from 'nativewind';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import TargetDivider from './(setup)/components/target-divider';
-import TargetRow from './(setup)/components/target-row';
-import { User, UserGoal } from './(setup)/domain/user';
-import UserPlan, { UserPlanValues } from './(setup)/domain/user-plan';
-import { setupColors } from './(setup)/setup-theme';
+import InfoTips from '../../components/info-tips';
+import { setupColors } from '../domain/setup-theme';
 
-type SavedUserPlanFile = {
-    user: User;
-    goal: UserGoal;
-    plan: UserPlanValues;
-};
 
-type SavedUserPlan = {
-    user: User;
-    goal: UserGoal;
-    plan: UserPlan;
-};
 
-const USER_PLAN_FILE_NAME = 'user-plan.json';
-
-async function readSavedUserPlan(): Promise<SavedUserPlan | null> {
-    try {
-        const file = new File(Paths.document, USER_PLAN_FILE_NAME);
-
-        if (!file.exists) {
-            return null;
-        }
-
-        const savedPlan = JSON.parse(await file.text()) as SavedUserPlanFile;
-
-        return {
-            user: savedPlan.user,
-            goal: savedPlan.goal,
-            plan: UserPlan.fromValues(savedPlan.plan),
-        };
-    } catch (error) {
-        console.error('Error reading user plan:', error);
-        return null;
-    }
-}
+cssInterop(LinearGradient, {
+    className: 'style',
+});
 
 export default function Home() {
-    const { isLoaded } = useAuth();
-    const [savedUserPlan, setSavedUserPlan] = useState<SavedUserPlan | null>();
+    const { isLoaded, user } = useUser();
+    const userName = user?.username
+        ? user.username.charAt(0).toUpperCase() + user.username.slice(1)
+        : "";
 
-    useEffect(() => {
-        readSavedUserPlan().then(setSavedUserPlan);
-    }, []);
+    const currentDateText = new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+    });
+    const router = useRouter();
 
-    if (!isLoaded || savedUserPlan === undefined) {
-        return (
-            <View className="flex-1 items-center justify-center bg-setup-cream">
-                <ActivityIndicator size="large" color={setupColors.primary} />
-            </View>
-        );
+    const redirectToSetup = () => {
+        router.replace('/(app)/(tabs)/(setup)/user-metrics')
     }
-
-    if (!savedUserPlan) {
-        return (
-            <SafeAreaProvider>
-                <SafeAreaView className="flex-1 bg-setup-cream">
-                    <ScrollView
-                        className="flex-1"
-                        contentContainerClassName="px-5 pt-2 pb-4"
-                        showsVerticalScrollIndicator={false}
-                    >
-                        <View className="flex-1 items-center justify-center">
-                            <Text className="text-2xl font-bold text-setup-main text-center">
-                                No user plan found. Please complete the setup process.
-                            </Text>
-                        </View>
-                    </ScrollView>
-                </SafeAreaView>
-            </SafeAreaProvider>
-        );
-    }
-
-    const { goal, plan } = savedUserPlan;
 
     return (
         <SafeAreaProvider>
@@ -90,61 +39,91 @@ export default function Home() {
                     contentContainerClassName="px-5 pt-2 pb-4"
                     showsVerticalScrollIndicator={false}
                 >
-                    <View>
-                        <Text className="text-2xl font-bold text-setup-main mb-4 text-center">
-                            Home Page
-                        </Text>
-                    </View>
 
-                    <View className="flew-col gap-3 justify-center rounded-2xl border border-setup-border bg-setup-card px-4 py-3 mb-4 shadow-xl shadow-setup-border">
-                        <View className="flex-row items-center">
-                            <Text className="font-bold text-setup-main"> Daily Targets </Text>
-                            <Text className="text-setup-muted text-sm"> (rough estimate ) </Text>
+                    {/* Header */}
+                    <View className='flex-col items-left gap-2 pb-8'>
+                        <Text className='text-lg, text-gray-400 font-bold'> {currentDateText} </Text>
+                        <View className="flex-row">
+                            <Text className='text-2xl font-bold'> Good Morning {userName}</Text>
+                            <Ionicons
+                                name="hand-right"
+                                color={setupColors.yellow}
+                                size={24}
+                            ></Ionicons>
                         </View>
-
-                        <TargetRow
-                            iconName="flame"
-                            iconColor={setupColors.planIcons.calories}
-                            targetLabel="Calories"
-                            targetValue={plan.planCalories.toFixed(0)}
-                            targetSubValue="kcal/day"
-                        />
-                        <TargetDivider />
-                        <TargetRow
-                            iconName="fish"
-                            iconColor={setupColors.planIcons.protein}
-                            targetLabel="Protein"
-                            targetValue={plan.proteinGrams.toFixed(0)}
-                            targetSubValue="g/day"
-                        />
-                        <TargetDivider />
-                        <TargetRow
-                            iconName="leaf"
-                            iconColor={setupColors.planIcons.carbs}
-                            targetLabel="Carbs"
-                            targetValue={plan.carbGrams.toFixed(0)}
-                            targetSubValue="g/day"
-                        />
-                        <TargetDivider />
-                        <TargetRow
-                            iconName="water"
-                            iconColor={setupColors.planIcons.fat}
-                            targetLabel="Fat"
-                            targetValue={plan.fatGrams.toFixed(0)}
-                            targetSubValue="g/day"
-                        />
                     </View>
 
-                    <View className="rounded-2xl border border-setup-border bg-setup-card px-4 py-3">
-                        <Text className="text-setup-main font-bold">
-                            Goal Pace
+                    {/* Meal Plan Card */}
+                    <LinearGradient
+                        // Background Linear Gradient
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        // RGB colors converted to Hex (or you can use 'rgb(61, 123, 80)')
+                        colors={['#3d7b50', '#5a9e6f']}
+                        className="flex-col w-full rounded-2xl items-start gap-4 px-5 py-5 mb-4"
+                    >
+
+                        <Text className="font-bold text-white/70 text-base">Ready to start?</Text>
+
+                        <Text className="font-bold text-white text-xl">
+                            No meal plan yet? {'\n'}Let's build yours
                         </Text>
-                        <Text className="text-setup-muted">
-                            {goal.pace.toFixed(1)} lb per week
+
+                        <Text className="text-left font-bold text-white/70 text-sm">
+                            Answer a few quick questions and we'll create a personalized plan with recipes matched to your goals.
                         </Text>
+
+                        {/* TODO: Change to working button */}
+                        <TouchableOpacity onPress={redirectToSetup}>
+
+                            <View className=" flex-row rounded-2xl items-center shadow-sm bg-white gap-2 px-4 py-3 mb-4" >
+                                <Text className="text-left font-bold text-[#3d7b50] text-sm" > Create My Plan</Text>
+                                <Ionicons
+                                    name="arrow-forward"
+                                    size={16}
+                                    color="#3d7b50" />
+                            </View>
+                        </TouchableOpacity>
+                    </LinearGradient>
+
+                    {/* What Youll get Cards */}
+
+                    <Text className='text-lg text-gray-600 mb-5'> What you'll get </Text>
+                    <View className='flex-col gap-2'>
+                        <InfoTips
+                            label="Personalized Macros"
+                            description="Calorie and nutrient targets based on your body and goals"
+                            icon="golf-outline"
+                            color="red"
+                        />
+                        <InfoTips
+                            label="Custom recipes"
+                            description="Handpicked meals that match your taste and dietary needs"
+                            icon="fast-food-outline"
+                            color="black"
+                        />
+                        <InfoTips
+                            label="Grocery list"
+                            description="Automated weekly shopping list synced to your plan"
+                            icon="list-outline"
+                            color="grey"
+                        />
+                        <InfoTips
+                            label="Progress tracking"
+                            description="Daily check-ins to keep you on track toward your goal"
+                            icon="bar-chart-outline"
+                            color="grey"
+                        />
+
+                        <TouchableOpacity onPress={redirectToSetup}>
+                            <View className="flex-row rounded-2xl items-center justify-center shadow-sm bg-[#3d7b50] gap-2 px-2 py-4" >
+                                <Text className="font-bold text-white" > Get Started</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
+
                 </ScrollView>
             </SafeAreaView>
-        </SafeAreaProvider>
+        </SafeAreaProvider >
     );
 }

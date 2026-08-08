@@ -9,11 +9,11 @@ import {
     View
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { setupColors } from '../../domain/setup-theme';
 import EditBox from './components/edit-box';
 import PaceSlider from './components/pace-slider';
 import SetupContinueButton from './components/setup-continue-button';
 import { ActivityLevel, Gender } from './domain/user';
-import { setupColors } from './setup-theme';
 
 export default function UserGoals() {
     const activtyLevel = useLocalSearchParams().activityLevel as ActivityLevel;
