@@ -8,13 +8,13 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import { setupColors } from '../../domain/setup-theme';
 import ActivityButton from './components/activity-button';
 import GenderButton from './components/gender-button';
 import HeightPicker from './components/height-picker';
 import SetupContinueButton from './components/setup-continue-button';
 import WeightPicker from './components/weight-picker';
 import { ActivityLevel, Gender } from './domain/user';
-import { setupColors } from './setup-theme';
 
 const ageOptions = Array.from(
     { length: 120 - 14 + 1 },

@@ -150,7 +150,7 @@ export default function Page() {
     }
     return (
         <SafeAreaProvider className="flex-1">
-            <View className="flex-1 px-6">
+            <View className="flex-1 px-5">
                 {/* Header Section */}
 
                 <View className="flex-1 justify-center">
@@ -172,7 +172,7 @@ export default function Page() {
                     {/* Sign-up form  */}
                     <KeyboardAvoidingView
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                        className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6" style={{ flexShrink: 1 }}
+                        className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-4" style={{ flexShrink: 1 }}
                     >
                         {/* Form header */}
                         <Text className="text-xl text-gray-900 font-bold text-center mb-4">
@@ -181,7 +181,7 @@ export default function Page() {
 
                         {/* username Input  */}
                         <Text className="text-sm font-medium text-gray-700 mb-2">
-                            username
+                            Username
                         </Text>
 
                         <View className="flex-row items-center bg-gray-50 rounded-xl border-gray-200 border px-4 py-4 mb-2">
@@ -254,7 +254,7 @@ export default function Page() {
                         <TouchableOpacity
                             onPress={handleSubmit}
                             disabled={!emailAddress || !password || fetchStatus === 'fetching' || isLoading}
-                            className={"rounded-xl py-4 px-4 shadow-sm mb-2 " + (isLoading ? "bg-gray-400" : "bg-blue-600")}
+                            className={"rounded-xl py-2 px-4 shadow-sm mb-1 " + (isLoading ? "bg-gray-400" : "bg-blue-600")}
                             activeOpacity={0.8}
                         >
                             <View className="flex-row items-center justify-center">

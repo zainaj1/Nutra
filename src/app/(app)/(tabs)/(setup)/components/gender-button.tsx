@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { setupColors } from '../setup-theme';
+import { setupColors } from '../../../domain/setup-theme';
 
 export default function GenderButton({
     label,

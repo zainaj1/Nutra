@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { Text, View } from 'react-native';
-import { setupColors } from './setup-theme';
+import { setupColors } from '../../domain/setup-theme';
 
 function SetupProgressHeader({
     currentStep,

@@ -4,12 +4,12 @@ import { File, Paths } from 'expo-file-system';
 import { useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { setupColors } from '../../domain/setup-theme';
 import SetupContinueButton from './components/setup-continue-button';
 import TargetDivider from './components/target-divider';
 import TargetRow from './components/target-row';
 import { ActivityLevel, Gender, User, UserGoal } from './domain/user';
 import UserPlan from './domain/user-plan';
-import { setupColors } from './setup-theme';
 
 
 

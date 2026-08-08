@@ -1,4 +1,4 @@
-const setupColors = require("./src/app/(app)/(tabs)/(setup)/setup-colors.json");
+const setupColors = require("./src/app/(app)/domain/setup-colors.json");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

@@ -25,6 +25,10 @@ export default function Page() {
     const [code, setCode] = React.useState('')
 
     const handleSubmit = async () => {
+        // TODO: Remove line
+        console.log("Email: ", emailAddress, ", Password: ", password)
+
+
         const { error } = await signIn.password({
             emailAddress,
             password,
@@ -54,8 +58,10 @@ export default function Page() {
                 },
             })
         } else if (signIn.status === 'needs_second_factor') {
+            console.log("needs_second_factor")
             // See https://clerk.com/docs/guides/development/custom-flows/authentication/multi-factor-authentication
         } else if (signIn.status === 'needs_client_trust') {
+            console.log("needs_client_trust")
             // For other second factor strategies,
             // see https://clerk.com/docs/guides/development/custom-flows/authentication/client-trust
             const emailCodeFactor = signIn.supportedSecondFactors.find(
@@ -99,7 +105,7 @@ export default function Page() {
         }
     }
 
-    if (signIn.status === 'needs_client_trust') {
+    if (signIn.status === 'needs_client_trust' || signIn.status === 'needs_second_factor') {
         return (
             <SafeAreaProvider className="flex-1 p-5 gap-3">
                 <Text className="text-2xl font-bold mb-4 py-3 px-6">
