@@ -1,4 +1,4 @@
-import { useUser } from '@clerk/expo';
+import { useAuth, useUser } from '@clerk/expo';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -10,12 +10,16 @@ import { setupColors } from '../domain/setup-theme';
 
 
 
+
 cssInterop(LinearGradient, {
     className: 'style',
 });
 
+
 export default function Home() {
-    const { isLoaded, user } = useUser();
+    const { user } = useUser();
+    const { getToken } = useAuth();
+
     const userName = user?.username
         ? user.username.charAt(0).toUpperCase() + user.username.slice(1)
         : "";
@@ -30,6 +34,17 @@ export default function Home() {
     const redirectToSetup = () => {
         router.replace('/(app)/(tabs)/(setup)/user-metrics')
     }
+
+    async function fetchMe() {
+        const token = await getToken()
+        const res = await fetch('http://localhost:8000/api/me', {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+        console.log(res.status, await res.clone().json())
+        return res.json()
+    }
+
+
 
     return (
         <SafeAreaProvider>
@@ -115,7 +130,7 @@ export default function Home() {
                             color="grey"
                         />
 
-                        <TouchableOpacity onPress={redirectToSetup}>
+                        <TouchableOpacity onPress={() => fetchMe()}>
                             <View className="flex-row rounded-2xl items-center justify-center shadow-sm bg-[#3d7b50] gap-2 px-2 py-4" >
                                 <Text className="font-bold text-white" > Get Started</Text>
                             </View>
