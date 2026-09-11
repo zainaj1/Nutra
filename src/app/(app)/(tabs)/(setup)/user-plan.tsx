@@ -198,9 +198,9 @@ export default function FinalizePlan() {
                 <View className="px-5 pt-3 pb-4">
                     <SetupContinueButton
                         href={{
-                            pathname: "/(app)/(tabs)/home"
+                            pathname: "/(app)/(tabs)/(setup)/setup-meals"
                         }}
-                        label="Finalize Plan"
+                        label="Setup my Meals"
                         replace
                         onPress={handleFinalizePlan}
                     />

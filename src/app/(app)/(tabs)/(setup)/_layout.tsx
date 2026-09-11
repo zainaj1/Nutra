@@ -73,7 +73,7 @@ export default function SetupLayout() {
             />
 
             <Stack.Screen
-                name="finalize-plan"
+                name="user-plan"
                 options={{
                     headerTitle: () => (
                         <SetupProgressHeader

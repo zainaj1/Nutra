@@ -165,7 +165,7 @@ export default function SetupMeals() {
                         href={{
                             pathname: "/(app)/(tabs)/(setup)/setup-meals"
                         }}
-                        label="Finalize Plan"
+                        label="Pick my Recipes"
                         replace
                         onPress={() => submitPlan(cookDayCount, people, convertMealsToArray(meals))}
                     />
