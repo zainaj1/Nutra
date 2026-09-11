@@ -15,7 +15,7 @@ import UserPlan from './domain/user-plan';
 
 export default function FinalizePlan() {
     const params = useLocalSearchParams();
-    const { isLoaded } = useAuth()
+    const { getToken, isLoaded } = useAuth()
     const getParamValue = (value: string | string[] | undefined) => (
         Array.isArray(value) ? value[0] : value
     );
@@ -66,6 +66,25 @@ export default function FinalizePlan() {
         } catch (error) {
             console.error('Error saving user data:', error);
         }
+    }
+
+    async function submitPlan() {
+        const token = await getToken()
+        const res = await fetch('http://localhost:8000/api/user_macros', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            method: 'POST',
+            body: JSON.stringify(userPlan.get_json())
+        })
+        console.log(res.status, await res.clone().json())
+        return res.json()
+    }
+
+    async function handleFinalizePlan() {
+        savePlan();
+        await submitPlan();
     }
 
     return (
@@ -183,7 +202,7 @@ export default function FinalizePlan() {
                         }}
                         label="Finalize Plan"
                         replace
-                        onPress={savePlan}
+                        onPress={handleFinalizePlan}
                     />
                 </View>
             </SafeAreaView>

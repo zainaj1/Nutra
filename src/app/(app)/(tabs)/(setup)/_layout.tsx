@@ -30,7 +30,7 @@ function SetupProgressHeader({
 }
 
 export default function SetupLayout() {
-    const totalSteps = 3;
+    const totalSteps = 5;
 
     return (
         <Stack
@@ -78,6 +78,18 @@ export default function SetupLayout() {
                     headerTitle: () => (
                         <SetupProgressHeader
                             currentStep={3}
+                            totalSteps={totalSteps}
+                        />
+                    ),
+                }}
+            />
+
+            <Stack.Screen
+                name="setup-meals"
+                options={{
+                    headerTitle: () => (
+                        <SetupProgressHeader
+                            currentStep={4}
                             totalSteps={totalSteps}
                         />
                     ),
