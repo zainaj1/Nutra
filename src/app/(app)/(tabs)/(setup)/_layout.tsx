@@ -95,6 +95,18 @@ export default function SetupLayout() {
                     ),
                 }}
             />
+
+            <Stack.Screen
+                name="select-meals"
+                options={{
+                    headerTitle: () => (
+                        <SetupProgressHeader
+                            currentStep={5}
+                            totalSteps={totalSteps}
+                        />
+                    ),
+                }}
+            />
         </Stack>
     );
 }

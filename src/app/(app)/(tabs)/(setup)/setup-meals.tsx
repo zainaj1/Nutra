@@ -22,7 +22,6 @@ export default function SetupMeals() {
     const [cookDayCount, setCookDayCount] = useState(0);
     const [people, setPeople] = useState(1);
     const [meals, setMeals] = useState('');
-    const [planResponse, setPlanResponse] = useState<any>(null);
     const { getToken } = useAuth();
 
     function handleCookDaysChange(day: string) {
@@ -51,32 +50,6 @@ export default function SetupMeals() {
     function convertMealsToString(meals: string): string {
         const mealNames = mealTypes.filter((meal) => meals.includes(meal));
         return mealNames.join(', ');
-    }
-
-    function convertMealsToArray(meals: string): string[] {
-        const mealNames = mealTypes.filter((meal) => meals.includes(meal));
-        return mealNames;
-    }
-
-
-    async function submitPlan(cookDayCount: number, people: number, meals: string[]) {
-        const token = await getToken()
-        await fetch('http://localhost:8000/api/plan_generations', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            method: 'POST',
-            body: JSON.stringify({
-                cook_days: cookDayCount,
-                number_of_people: people,
-                meals: meals
-            })
-        })
-            .then((res) => res.json())
-            .catch((error) => console.error('Error submitting plan:', error))
-            .then((data) => setPlanResponse(data))
-            .catch((error) => console.error('Error parsing plan:', error));
     }
 
 
@@ -163,11 +136,14 @@ export default function SetupMeals() {
                 <View className="px-5 pt-3 pb-4">
                     <SetupContinueButton
                         href={{
-                            pathname: "/(app)/(tabs)/(setup)/setup-meals"
+                            pathname: "/(app)/(tabs)/(setup)/select-meals",
+                            params: {
+                                cookDayCount: cookDayCount,
+                                people: people,
+                                meals: meals
+                            }
                         }}
                         label="Pick my Recipes"
-                        replace
-                        onPress={() => submitPlan(cookDayCount, people, convertMealsToArray(meals))}
                     />
                 </View>
             </SafeAreaView>

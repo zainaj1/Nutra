@@ -201,7 +201,6 @@ export default function FinalizePlan() {
                             pathname: "/(app)/(tabs)/(setup)/setup-meals"
                         }}
                         label="Setup my Meals"
-                        replace
                         onPress={handleFinalizePlan}
                     />
                 </View>
