@@ -9,7 +9,7 @@ Expo Router maps files to routes.
 ```text
 src/app/(app)/(tabs)/(setup)/user-metrics.tsx
 src/app/(app)/(tabs)/(setup)/user-goals.tsx
-src/app/(app)/(tabs)/(setup)/finalize-plan.tsx
+src/app/(app)/(tabs)/(setup)/user-plan.tsx
 ```
 
 Each file exports a React component that becomes a screen.
@@ -147,7 +147,7 @@ Use it from setup screens like this:
 ```tsx
 <SetupContinueButton
   href={{
-    pathname: "/(app)/(tabs)/(setup)/finalize-plan",
+    pathname: "/(app)/(tabs)/(setup)/user-plan",
     params: { weight, pace },
   }}
   disabled={!canContinue}
@@ -169,7 +169,7 @@ Params are passed through `href`.
 ```tsx
 <Link
   href={{
-    pathname: "/(app)/(tabs)/(setup)/finalize-plan",
+    pathname: "/(app)/(tabs)/(setup)/user-plan",
     params: {
       activityLevel,
       gender,

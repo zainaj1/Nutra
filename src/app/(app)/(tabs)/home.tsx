@@ -1,8 +1,10 @@
+import { startNewPlanIntent } from '@/src/lib/plan-creation-intent';
 import { useAuth, useUser } from '@clerk/expo';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { cssInterop } from 'nativewind';
+import { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import InfoTips from '../../components/info-tips';
@@ -18,7 +20,8 @@ cssInterop(LinearGradient, {
 
 export default function Home() {
     const { user } = useUser();
-    const { getToken } = useAuth();
+    const { getToken, userId } = useAuth();
+    const [planStartError, setPlanStartError] = useState<string | null>(null);
 
     const userName = user?.username
         ? user.username.charAt(0).toUpperCase() + user.username.slice(1)
@@ -32,12 +35,19 @@ export default function Home() {
     const router = useRouter();
 
     const redirectToSetup = () => {
-        router.replace('/(app)/(tabs)/(setup)/user-metrics')
+        if (!userId) return;
+        try {
+            startNewPlanIntent(`http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/plan_generations`, userId);
+            setPlanStartError(null);
+            router.replace('/(app)/(tabs)/(setup)/user-metrics');
+        } catch {
+            setPlanStartError('Could not save your new plan request. Check device storage and try again.');
+        }
     }
 
     async function fetchMe() {
         const token = await getToken()
-        const res = await fetch('http://localhost:8000/api/me', {
+        const res = await fetch(`http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/me`, {
             headers: { Authorization: `Bearer ${token}` },
         })
         console.log(res.status, await res.clone().json())
@@ -68,6 +78,9 @@ export default function Home() {
                         </View>
                     </View>
 
+                    {planStartError && (
+                        <Text accessibilityRole="alert" className="text-red-800 mb-4">{planStartError}</Text>
+                    )}
                     {/* Meal Plan Card */}
                     <LinearGradient
                         // Background Linear Gradient

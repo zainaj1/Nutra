@@ -70,7 +70,7 @@ export default function FinalizePlan() {
 
     async function submitPlan() {
         const token = await getToken()
-        const res = await fetch('http://localhost:8000/api/user_macros', {
+        const res = await fetch(`http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/user_macros`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',

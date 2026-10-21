@@ -1,21 +1,21 @@
 /// <reference types="jest" />
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native/pure';
 import * as Clerk from '@clerk/expo';
 import { useSignInWithGoogle } from '@clerk/expo/google';
+import { fireEvent, render, waitFor } from '@testing-library/react-native/pure';
 import { Platform } from 'react-native';
 
-import GoogleSignInButton from '../src/app/components/GoogleSignInButton';
+import { mockRouter } from '../jest.setup';
 import SignIn from '../src/app/(app)/(auth)/sign-in';
 import SignUp from '../src/app/(app)/(auth)/sign-up';
-import FinalizePlan from '../src/app/(app)/(tabs)/(setup)/finalize-plan';
 import UserGoals from '../src/app/(app)/(tabs)/(setup)/user-goals';
 import UserMetrics from '../src/app/(app)/(tabs)/(setup)/user-metrics';
 import UserPace from '../src/app/(app)/(tabs)/(setup)/user-pace';
+import FinalizePlan from '../src/app/(app)/(tabs)/(setup)/user-plan';
 import Home from '../src/app/(app)/(tabs)/home';
 import Plan from '../src/app/(app)/(tabs)/plan';
 import Settings from '../src/app/(app)/(tabs)/settings';
-import { mockRouter } from '../jest.setup';
+import GoogleSignInButton from '../src/app/components/GoogleSignInButton';
 
 const loadedAuth = { isLoaded: true, isSignedIn: true };
 

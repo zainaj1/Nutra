@@ -10,7 +10,19 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Configure the backend host in `.env`:
+
+   ```dotenv
+   EXPO_PUBLIC_ADDRESS=192.168.1.100
+   ```
+
+   Use your backend computer's hostname or LAN IP, without a protocol or port;
+   requests use `http://<host>:8000/api/...`. On a physical phone, the host must
+   be reachable from the phone. Fully reload the app after changing this value.
+   Expo exposes `EXPO_PUBLIC_` variables in the app bundle, so use them only for
+   public configuration.
+
+3. Start the app
 
    ```bash
    npx expo start
@@ -48,3 +60,17 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## Plan creation requests
+
+Creation sends an `Idempotency-Key` header; the JSON requirements body is unchanged.
+The app writes the key and requirements to a user/backend-specific file before
+sending a POST, then reuses that intent after retries, remounts, and app restarts.
+A storage failure stops the request. “Create My Plan” on Home starts a new intent.
+Changing requirements within an existing intent requires starting a new plan;
+HTTP 409 conflicts do not silently generate a replacement key.
+
+Keys are local to each device. Multiple devices must receive the same intent key
+through a separate sharing/sync mechanism to refer to the same creation. Locally
+generated keys on different devices represent different intents. Backend memory
+resets and multiple workers remain limitations of the backend's current storage.
