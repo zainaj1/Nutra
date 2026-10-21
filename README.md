@@ -74,3 +74,26 @@ Keys are local to each device. Multiple devices must receive the same intent key
 through a separate sharing/sync mechanism to refer to the same creation. Locally
 generated keys on different devices represent different intents. Backend memory
 resets and multiple workers remain limitations of the backend's current storage.
+
+## Home recipes
+
+Home reads `user-plan.json` and only fetches when `planSetup` is explicitly `true`
+and `plan-id` is a nonempty generation ID. Missing, unreadable, or incomplete setup
+records show the original setup screen without a recipe request. Old records
+without `planSetup: true` also default to setup.
+
+For completed plans, Home makes one authenticated GET to
+`/api/plan_generations/{generation_id}/recipies` per page mount, after
+authentication loads. Re-renders, opening recipe details, switching
+back to an already mounted tab, and development effect replay do not fetch again.
+There is no polling or automatic retry. Completing a new plan starts a fresh Home
+load using its generation ID as the page key.
+
+The saved `planSetup` boolean becomes true when all required recipes are accepted.
+An explicit false, a null/empty recipe response, a `404` with
+`reason: "Plan generation not found"` (or the default FastAPI `detail` field),
+or no saved generation ID shows the original setup screen. A missing-plan
+response also clears the matching saved ID and sets `planSetup` to false, so a
+backend restart does not leave the device repeatedly fetching a stale plan.
+Recipe cards open details using the
+already loaded data; API errors show an error message.

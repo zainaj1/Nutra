@@ -21,6 +21,7 @@ function savePlan(planResponse: any) {
 
         file.write(JSON.stringify({
             "plan-id": planResponse["generation_id"],
+            planSetup: planResponse.accepted_recipe_count >= planResponse.required_recipe_count,
         }));
     } catch (error) {
         console.error('Error saving user data:', error);
@@ -130,6 +131,7 @@ export default function SelectMeals() {
             throw new Error(await responseError(planResult, 'Could not refresh your plan. Please try again.'));
         }
         const updatedPlan = await planResult.json();
+        savePlan(updatedPlan);
         setPlanResponse(updatedPlan);
         setCurrentRecipe(
             updatedPlan.accepted_recipe_count >= updatedPlan.required_recipe_count
@@ -211,6 +213,7 @@ export default function SelectMeals() {
                     meals: ['breakfast', 'lunch', 'dinner', 'dessert'].filter(meal => meals.includes(meal)),
                 });
                 if (!plan?.generation_id) throw new Error('The server did not return a valid meal plan.');
+                savePlan(plan);
                 setPlanResponse(plan);
                 if (plan.accepted_recipe_count >= plan.required_recipe_count) return;
 
@@ -345,7 +348,8 @@ export default function SelectMeals() {
                 <View className="px-5 pt-3 pb-4">
                     <SetupContinueButton
                         href={{
-                            pathname: "/(app)/(tabs)/home"
+                            pathname: "/(app)/(tabs)/home",
+                            params: { generationId: planResponse?.generation_id },
                         }}
                         label="Pick my Recipes"
                         disabled={isUpdatingRecipe || !isPlanComplete}
