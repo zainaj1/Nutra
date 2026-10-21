@@ -31,6 +31,14 @@ export default class UserPlan {
         this.totalWeeksToReachGoal = totalWeeksToReachGoal;
     }
 
+    get_json() {
+        return {
+            protien: Math.round(this.proteinGrams),
+            fats: Math.round(this.fatGrams),
+            carbs: Math.round(this.carbGrams)
+        }
+    }
+
     static from(user: User, userGoal: UserGoal) {
         const { planCalories } = CalculateUserPlan(user, userGoal);
         const { proteinGrams, fatGrams, carbGrams } = CalculateUserMacros(planCalories);

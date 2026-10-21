@@ -137,7 +137,7 @@ export default function UserGoals() {
                 <View className="px-5 pt-3 pb-4">
                     <SetupContinueButton
                         href={{
-                            pathname: "/(app)/(tabs)/(setup)/finalize-plan",
+                            pathname: "/(app)/(tabs)/(setup)/user-plan",
                             params: {
                                 activityLevel: activtyLevel,
                                 gender,
