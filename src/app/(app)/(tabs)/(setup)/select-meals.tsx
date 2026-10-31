@@ -13,6 +13,10 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import SetupContinueButton from './components/setup-continue-button';
 
 
+function isCompletedPlan(plan: any): boolean {
+    return plan?.status ? plan.status === 'COMPLETED'
+        : !!plan && plan.accepted_recipe_count >= plan.required_recipe_count;
+}
 
 function savePlan(planResponse: any) {
     try {
@@ -23,7 +27,7 @@ function savePlan(planResponse: any) {
 
         file.write(JSON.stringify({
             "plan-id": planResponse["generation_id"],
-            planSetup: planResponse.accepted_recipe_count >= planResponse.required_recipe_count,
+            planSetup: isCompletedPlan(planResponse),
         }));
     } catch (error) {
         console.error('Error saving user data:', error);
@@ -109,6 +113,12 @@ function loadPlanOnce(
 }
 
 export default function SelectMeals() {
+    const { generationId } = useLocalSearchParams<{ generationId?: string }>();
+    const { userId } = useAuth();
+    return <SelectMealsContent key={JSON.stringify([userId, generationId])} />;
+}
+
+function SelectMealsContent() {
     const params = useLocalSearchParams();
     const getParamValue = (value: string | string[] | undefined) => (
         Array.isArray(value) ? value[0] : value
@@ -116,6 +126,7 @@ export default function SelectMeals() {
     const cookDayCount = Number(getParamValue(params.cookDayCount));
     const people = Number(getParamValue(params.people));
     const meals = getParamValue(params.meals) || '';
+    const generationId = getParamValue(params.generationId);
 
     const { getToken, isLoaded, isSignedIn, userId } = useAuth();
     const initializationStarted = useRef(false);
@@ -127,7 +138,7 @@ export default function SelectMeals() {
     const recipeRequestInFlight = useRef(false);
     const [needsRefresh, setNeedsRefresh] = useState(false);
     const pendingRefresh = useRef<{ nextRecipe: any } | null>(null);
-    const isPlanComplete = planResponse && planResponse.accepted_recipe_count >= planResponse.required_recipe_count;
+    const isPlanComplete = isCompletedPlan(planResponse);
     async function refreshPlan(url: string) {
         const planResult = await authenticatedFetch(getToken, url);
         if (!planResult.ok) {
@@ -137,7 +148,7 @@ export default function SelectMeals() {
         savePlan(updatedPlan);
         setPlanResponse(updatedPlan);
         setCurrentRecipe(
-            updatedPlan.accepted_recipe_count >= updatedPlan.required_recipe_count
+            isCompletedPlan(updatedPlan)
                 ? null
                 : pendingRefresh.current?.nextRecipe ?? null
         );
@@ -152,7 +163,7 @@ export default function SelectMeals() {
         setIsUpdatingRecipe(true);
         setRecipeError(null);
         try {
-            const url = `http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/plan_generations/${planResponse.generation_id}`;
+            const url = `http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/plan_generations/${encodeURIComponent(planResponse.generation_id)}`;
             const response = await authenticatedFetch(getToken, `${url}/candidates/${action}`, {
                 method: 'POST',
             });
@@ -189,7 +200,7 @@ export default function SelectMeals() {
         setIsUpdatingRecipe(true);
         setRecipeError(null);
         try {
-            const url = `http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/plan_generations/${planResponse.generation_id}`;
+            const url = `http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/plan_generations/${encodeURIComponent(planResponse.generation_id)}`;
             await refreshPlan(url);
         } catch (error) {
             setRecipeError(error instanceof SessionExpiredError
@@ -210,7 +221,14 @@ export default function SelectMeals() {
 
         async function initializePlan() {
             try {
-                const plan = await loadPlanOnce(getToken, baseUrl, userId, {
+                // Direct links resume this exact plan without creating a new intent.
+                const loadRequestedPlan = async () => {
+                    const response = await authenticatedFetch(getToken, `${baseUrl}/${encodeURIComponent(generationId!)}`);
+                    if (!response.ok) throw new Error(await responseError(response, 'This plan is unavailable.'));
+                    const data = await response.json();
+                    return { ...data, generation_id: generationId };
+                };
+                const plan = generationId ? await loadRequestedPlan() : await loadPlanOnce(getToken, baseUrl, userId, {
                     cook_days: cookDayCount,
                     number_of_people: people,
                     meals: ['breakfast', 'lunch', 'dinner', 'dessert'].filter(meal => meals.includes(meal)),
@@ -218,9 +236,11 @@ export default function SelectMeals() {
                 if (!plan?.generation_id) throw new Error('The server did not return a valid meal plan.');
                 savePlan(plan);
                 setPlanResponse(plan);
-                if (plan.accepted_recipe_count >= plan.required_recipe_count) return;
+                setAcceptedRecipeCount(plan.accepted_recipe_count);
+                if (plan.status === 'CANCELLED') throw new Error('This plan has been cancelled.');
+                if (isCompletedPlan(plan)) return;
 
-                const response = await authenticatedFetch(getToken, `${baseUrl}/${plan.generation_id}/candidates`, {
+                const response = await authenticatedFetch(getToken, `${baseUrl}/${encodeURIComponent(plan.generation_id)}/candidates`, {
                     method: 'POST',
                 });
                 if (!response.ok) {
@@ -235,7 +255,7 @@ export default function SelectMeals() {
             }
         }
         void initializePlan();
-    }, [isLoaded, isSignedIn, userId, getToken, cookDayCount, people, meals]);
+    }, [isLoaded, isSignedIn, userId, getToken, cookDayCount, people, meals, generationId]);
 
 
     return (
@@ -341,6 +361,12 @@ export default function SelectMeals() {
                             ) : null}
                         </View>
                     )}
+                    {isPlanComplete && !isUpdatingRecipe && <View className="mt-5">
+                        <SetupContinueButton
+                            href={{ pathname: '/(app)/(tabs)/plan', params: { generationId: planResponse.generation_id } }}
+                            label="View groceries"
+                        />
+                    </View>}
                 </ScrollView>
 
                 {/* Finalize Button */}

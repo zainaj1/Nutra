@@ -9,8 +9,9 @@ import { startNewPlanIntent } from '../src/lib/plan-creation-intent';
 import { type Recipe } from '../src/lib/plan-recipes';
 
 const mockReplace = jest.fn();
+const mockPush = jest.fn();
 jest.mock('@clerk/expo', () => ({ useAuth: jest.fn(), useUser: jest.fn() }));
-jest.mock('expo-router', () => ({ useLocalSearchParams: jest.fn(), useRouter: () => ({ replace: mockReplace }) }));
+jest.mock('expo-router', () => ({ useLocalSearchParams: jest.fn(), useRouter: () => ({ replace: mockReplace, push: mockPush }) }));
 jest.mock('expo-file-system', () => ({ File: jest.fn(), Paths: { document: 'document' } }));
 jest.mock('../src/lib/authenticated-fetch', () => ({ authenticatedFetch: jest.fn() }));
 jest.mock('../src/lib/plan-creation-intent', () => ({ startNewPlanIntent: jest.fn() }));
@@ -49,6 +50,22 @@ beforeEach(() => {
     jest.mocked(authenticatedFetch).mockResolvedValue(response([recipe]));
 });
 afterEach(async () => { await cleanup(); });
+
+it('opens groceries for the completed plan loaded on Home', async () => {
+    const screen = await render(<Home />);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'View groceries' })).toBeTruthy());
+    await fireEvent.press(screen.getByRole('button', { name: 'View groceries' }));
+    expect(mockPush).toHaveBeenCalledWith({ pathname: '/(app)/(tabs)/plan', params: { generationId: 'generation/1' } });
+});
+
+it('loads the plan in the URL even if a different plan is saved locally', async () => {
+    jest.mocked(useLocalSearchParams).mockReturnValue({ generationId: 'linked-plan' });
+    const screen = await render(<Home />);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'View groceries' })).toBeTruthy());
+    expect(jest.mocked(authenticatedFetch).mock.calls[0][1]).toMatch(/\/linked-plan\/recipies$/);
+    await fireEvent.press(screen.getByRole('button', { name: 'View groceries' }));
+    expect(mockPush).toHaveBeenCalledWith({ pathname: '/(app)/(tabs)/plan', params: { generationId: 'linked-plan' } });
+});
 
 it('requests once through StrictMode, slow responses, auth function changes, and opening/closing details', async () => {
     let finish!: (value: Response) => void;

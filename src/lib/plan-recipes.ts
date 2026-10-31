@@ -62,10 +62,12 @@ async function clearMissingSavedPlan(generationId: string) {
     }
 }
 
-export async function loadHomeRecipes(getToken: Parameters<typeof authenticatedFetch>[0]) {
-    const notSetup = { planSetup: false, recipes: [] as Recipe[] };
+export async function loadHomeRecipes(getToken: Parameters<typeof authenticatedFetch>[0], requestedPlanId?: string) {
+    const notSetup = { planSetup: false, recipes: [] as Recipe[], generationId: null as string | null };
     let savedPlan: unknown;
-    try {
+    if (requestedPlanId) {
+        savedPlan = { 'plan-id': requestedPlanId, planSetup: true };
+    } else try {
         const file = new File(Paths.document, 'user-plan.json');
         if (!file.exists) return notSetup;
         savedPlan = JSON.parse(await file.text());
@@ -109,5 +111,5 @@ export async function loadHomeRecipes(getToken: Parameters<typeof authenticatedF
     if (!Array.isArray(data) || !data.every(isRecipe)) {
         throw new Error('The recipe service returned an unexpected response. Please reload the app to try again.');
     }
-    return { planSetup: true, recipes: data };
+    return { planSetup: true, recipes: data, generationId: generationId.trim() };
 }

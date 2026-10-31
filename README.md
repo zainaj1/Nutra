@@ -77,7 +77,7 @@ resets and multiple workers remain limitations of the backend's current storage.
 
 ## Home recipes
 
-Home reads `user-plan.json` and only fetches when `planSetup` is explicitly `true`
+Without an explicit `generationId` URL parameter, Home reads `user-plan.json` and only fetches when `planSetup` is explicitly `true`
 and `plan-id` is a nonempty generation ID. Missing, unreadable, or incomplete setup
 records show the original setup screen without a recipe request. Old records
 without `planSetup: true` also default to setup.
@@ -95,8 +95,41 @@ An explicit false, a null/empty recipe response, a `404` with
 or no saved generation ID shows the original setup screen. A missing-plan
 response also clears the matching saved ID and sets `planSetup` to false, so a
 backend restart does not leave the device repeatedly fetching a stale plan.
+An explicit `generationId` loads that plan instead of the device's saved plan.
 Recipe cards open details using the
 already loaded data; API errors show an error message.
+
+## Pantry
+
+Groceries live in the bottom navigation's **Groceries** tab. Opening the tab directly
+loads the current saved plan; no saved plan shows a link to Home to get started.
+Completed recipe selection and Home offer **View groceries**, which opens Groceries.
+The protected route `/plan?generationId=<plan-id>` uses the existing query-parameter convention and
+exports as a static page, allowing direct navigation and refresh for arbitrary
+plan IDs without generating individual pages at build time. Older `/pantry` links
+redirect into the Groceries tab, preserving the plan ID. **Back to plan**
+resumes `/select-meals?generationId=<plan-id>` through an authenticated GET;
+a missing linked plan never triggers creation of a replacement.
+
+Pantry fetches `/api/plan_generations/{plan-id}/grocery_list` using the Clerk
+authenticated client. It ignores the response's `generation_id` (a pantry UUID),
+preserves every item row and unit, and displays quantities without fixed decimal
+rounding. Very small quantities may use scientific notation. There are no editing
+or persisted checkbox controls.
+
+State is scoped to the signed-in user and route plan. Each focus and explicit retry
+fetches fresh data, including after completion of recipe selection. A missing
+pantry triggers a plan-status GET so only `IN_PROGRESS` plans show completion
+instructions. Completed or cancelled plans offer retry. Missing plans, session
+expiry, malformed responses, and service failures have distinct error handling;
+only a successful empty `items` array shows the empty state. Session expiry offers
+Clerk sign-out followed by the existing sign-in routing flow.
+
+Run the relevant tests with:
+
+```bash
+npm test -- --preset jest-expo --runInBand --watchman=false __tests__/pantry.test.tsx __tests__/home-recipes.test.tsx __tests__/select-meals-initialization.test.tsx
+```
 
 ## Design theme
 

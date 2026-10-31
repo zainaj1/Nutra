@@ -1,14 +1,15 @@
 import React, { StrictMode } from 'react';
-import { act, cleanup, render, waitFor } from '@testing-library/react-native/pure';
+import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react-native/pure';
 import { useAuth } from '@clerk/expo';
 import { File } from 'expo-file-system';
+import { useLocalSearchParams } from 'expo-router';
 import { authenticatedFetch } from '@/src/lib/authenticated-fetch';
 import { getPlanIntent, startNewPlanIntent } from '@/src/lib/plan-creation-intent';
 import SelectMeals from '../src/app/(app)/(tabs)/(setup)/select-meals';
 
 jest.mock('@clerk/expo', () => ({ useAuth: jest.fn() }));
 jest.mock('expo-router', () => ({
-    useLocalSearchParams: () => ({ cookDayCount: '3', people: '2', meals: 'breakfast,dinner' }),
+    useLocalSearchParams: jest.fn(),
 }));
 jest.mock('expo-crypto', () => ({ randomUUID: jest.fn(() => `key-${Math.random()}`) }));
 jest.mock('expo-file-system', () => ({ File: jest.fn(), Paths: { document: 'document' } }));
@@ -18,7 +19,8 @@ jest.mock('react-native-safe-area-context', () => ({
     SafeAreaView: ({ children }: any) => children,
 }));
 jest.mock('../src/app/(app)/domain/setup-theme', () => ({ setupColors: { primary: '#000' } }), { virtual: true });
-jest.mock('../src/app/(app)/(tabs)/(setup)/components/setup-continue-button', () => () => null, { virtual: true });
+const mockContinueButton = jest.fn((_props: unknown) => null);
+jest.mock('../src/app/(app)/(tabs)/(setup)/components/setup-continue-button', () => (props: unknown) => mockContinueButton(props), { virtual: true });
 jest.mock('@/src/lib/authenticated-fetch', () => ({
     authenticatedFetch: jest.fn(), SessionExpiredError: class SessionExpiredError extends Error {},
 }));
@@ -37,6 +39,7 @@ const baseUrl = `http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/plan_generat
 
 beforeEach(() => {
     jest.clearAllMocks();
+    jest.mocked(useLocalSearchParams).mockReturnValue({ cookDayCount: '3', people: '2', meals: 'breakfast,dinner' });
     files.clear();
     currentUser = `user-${++userSequence}`;
     jest.mocked(useAuth).mockReturnValue({ getToken, userId: currentUser, isLoaded: true, isSignedIn: true } as never);
@@ -50,6 +53,40 @@ beforeEach(() => {
         response(url.endsWith('/candidates') ? recipe : plan));
 });
 afterEach(async () => { await cleanup(); });
+
+it('resumes a completed plan by URL and offers groceries with the same plan ID', async () => {
+    jest.mocked(useLocalSearchParams).mockReturnValue({ generationId: 'linked/plan' });
+    jest.mocked(authenticatedFetch).mockResolvedValue(response({ ...plan, generation_id: 'linked/plan',
+        accepted_recipe_count: 6, status: 'COMPLETED' }));
+    const screen = await render(<SelectMeals />);
+    await waitFor(() => expect(screen.getByText('All recipes accepted!')).toBeTruthy());
+    expect(authenticatedFetch).toHaveBeenCalledTimes(1);
+    expect(authenticatedFetch).toHaveBeenCalledWith(getToken, `${baseUrl}/linked%2Fplan`);
+    expect(mockContinueButton).toHaveBeenCalledWith(expect.objectContaining({
+        label: 'View groceries', href: { pathname: '/(app)/(tabs)/plan', params: { generationId: 'linked/plan' } },
+    }));
+});
+
+it('does not create a replacement when a linked plan is missing', async () => {
+    jest.mocked(useLocalSearchParams).mockReturnValue({ generationId: 'missing-plan' });
+    jest.mocked(authenticatedFetch).mockResolvedValue(response({ detail: 'Plan generation not found' }, 404));
+    const screen = await render(<SelectMeals />);
+    await waitFor(() => expect(screen.getByText('Plan generation not found')).toBeTruthy());
+    expect(authenticatedFetch).toHaveBeenCalledTimes(1);
+});
+
+it('offers groceries after accepting the final recipe and refreshing the plan', async () => {
+    const screen = await render(<SelectMeals />);
+    await waitFor(() => expect(screen.getByText('Chicken')).toBeTruthy());
+    expect(mockContinueButton).not.toHaveBeenCalledWith(expect.objectContaining({ label: 'View groceries' }));
+    jest.mocked(authenticatedFetch).mockResolvedValueOnce(response(null))
+        .mockResolvedValueOnce(response({ ...plan, status: 'COMPLETED', accepted_recipe_count: 6 }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Accept recipe' }));
+    await waitFor(() => expect(screen.getByText('All recipes accepted!')).toBeTruthy());
+    expect(mockContinueButton).toHaveBeenCalledWith(expect.objectContaining({
+        label: 'View groceries', href: { pathname: '/(app)/(tabs)/plan', params: { generationId: plan.generation_id } },
+    }));
+});
 
 it('starts only one plan while a slow initial request spans multiple renders', async () => {
     let finish!: (value: Response) => void;

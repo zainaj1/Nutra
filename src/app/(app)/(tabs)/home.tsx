@@ -19,15 +19,17 @@ cssInterop(LinearGradient, {
 
 export default function Home() {
     const { generationId } = useLocalSearchParams<{ generationId?: string }>();
+    const { userId } = useAuth();
     // Finishing a new plan starts a new page load even if the tab stayed mounted.
-    return <HomeContent key={generationId ?? 'saved-plan'} />;
+    return <HomeContent key={JSON.stringify([userId, generationId])} requestedPlanId={generationId} />;
 }
 
-function HomeContent() {
+function HomeContent({ requestedPlanId }: { requestedPlanId?: string }) {
     const { user } = useUser();
     const { getToken, userId, isLoaded, isSignedIn } = useAuth();
     const [planStartError, setPlanStartError] = useState<string | null>(null);
     const [planSetup, setPlanSetup] = useState(false);
+    const [planId, setPlanId] = useState<string | null>(null);
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -38,11 +40,12 @@ function HomeContent() {
         if (!isLoaded || !isSignedIn || !userId) return;
         // Retain the same promise through renders and StrictMode effect replay.
         // Failures are retained too: no polling or automatic retries.
-        if (!initialLoad.current) initialLoad.current = loadHomeRecipes(getToken);
+        if (!initialLoad.current) initialLoad.current = loadHomeRecipes(getToken, requestedPlanId);
         let active = true;
         void initialLoad.current.then(result => {
             if (!active) return;
             setPlanSetup(result.planSetup);
+            setPlanId(result.generationId);
             setRecipes(result.recipes);
             setIsLoading(false);
         }, error => {
@@ -51,7 +54,7 @@ function HomeContent() {
             setIsLoading(false);
         });
         return () => { active = false; };
-    }, [getToken, isLoaded, isSignedIn, userId]);
+    }, [getToken, isLoaded, isSignedIn, userId, requestedPlanId]);
 
     const userName = user?.username
         ? user.username.charAt(0).toUpperCase() + user.username.slice(1)
@@ -114,6 +117,10 @@ function HomeContent() {
                         <View>
                             <Text accessibilityRole="header" className="text-2xl font-bold text-[#1c3020] mb-2">Your recipes</Text>
                             <Text className="text-gray-500 mb-5">{recipes.length} recipes in your plan · Tap a card to start cooking</Text>
+                            {planId && <TouchableOpacity accessibilityRole="button" className="self-start bg-studio-primary rounded-2xl px-6 py-4 mb-5"
+                                onPress={() => router.push({ pathname: '/(app)/(tabs)/plan', params: { generationId: planId } })}>
+                                <Text className="text-white font-semibold">View groceries</Text>
+                            </TouchableOpacity>}
                             {recipes.map((recipe, index) => (
                                 <RecipeCard key={`${recipe.recipe_id}-${index}`} recipe={recipe} onPress={() => setSelectedRecipe(recipe)} />
                             ))}

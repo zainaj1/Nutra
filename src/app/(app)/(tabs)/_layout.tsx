@@ -11,6 +11,15 @@ export default function Layout() {
                     <AntDesign name="home" size={size} color={color} />
                 ),
             }} />
+            <Tabs.Screen name="plan" options={{
+                title: 'Groceries',
+                headerShown: false,
+                // A tab press opens the current saved plan, even after viewing an older linked plan.
+                href: { pathname: '/(app)/(tabs)/plan', params: { generationId: '' } },
+                tabBarIcon: ({ color, size }) => (
+                    <AntDesign name="profile" size={size} color={color} />
+                ),
+            }} />
             <Tabs.Screen name="(setup)" options={{
                 title: 'Setup',
                 headerShown: false,
