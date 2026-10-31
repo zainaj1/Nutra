@@ -1,13 +1,15 @@
+const studio = require("./constants/studio-colors.json");
 const setupColors = require("./src/app/(app)/domain/setup-colors.json");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     // NOTE: Update this to include the paths to all of your component files.
-    content: ["./app/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
+    content: ["./app/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
     presets: [require("nativewind/preset")],
     theme: {
         extend: {
             colors: {
+                studio: { ...studio, main: studio.textMain, muted: studio.textMuted },
                 green: {
                     50: setupColors.soft,
                     100: setupColors.selected,

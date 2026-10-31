@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { setupColors } from '../../../domain/setup-theme';
+import setupColors from '@/constants/studio-colors.json';
 
 export default function ActivityButton({
     label,
@@ -18,7 +18,7 @@ export default function ActivityButton({
     return (
         <TouchableOpacity
             onPress={onPress}
-            className="w-[23%] rounded-xl"
+            className="w-[48%] rounded-xl"
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel={label}
@@ -26,12 +26,12 @@ export default function ActivityButton({
         >
             <View
                 className={
-                    "w-full h-36 rounded-2xl items-center shadow-sm border shadow-xl shadow-setup-border px-2 py-3 " +
+                    "w-full min-h-28 rounded-2xl items-center border shadow-sm shadow-studio-border px-2 py-3 " +
                     (selected
-                        ? "bg-setup-selected border-setup-border"
-                        : "bg-setup-card border-setup-border")
+                        ? "bg-studio-selected border-studio-primary"
+                        : "bg-studio-card border-studio-border")
                 }
-                style={{ elevation: 4 }}
+                style={{ elevation: 1 }}
             >
                 <View className="h-10 w-full items-center justify-center mb-2">
                     <Ionicons
@@ -41,24 +41,24 @@ export default function ActivityButton({
                     />
                 </View>
 
-                <View className="h-8 w-full items-center justify-center">
+                <View className="min-h-6 w-full items-center justify-center">
                     <Text
                         numberOfLines={2}
                         className={
                             "text-xs font-bold text-center " +
-                            (selected ? "text-setup-dark" : "text-setup-main")
+                            (selected ? "text-studio-dark" : "text-studio-main")
                         }
                     >
                         {label}
                     </Text>
                 </View>
 
-                <View className="h-10 w-full items-center justify-start">
+                <View className="min-h-6 w-full items-center justify-start">
                     <Text
                         numberOfLines={2}
                         className={
                             "text-xs text-center " +
-                            (selected ? "text-setup-dark" : "text-setup-muted")
+                            (selected ? "text-studio-dark" : "text-studio-muted")
                         }
                     >
                         {secondaryLabel}

@@ -97,3 +97,17 @@ response also clears the matching saved ID and sets `planSetup` to false, so a
 backend restart does not leave the device repeatedly fetching a stale plan.
 Recipe cards open details using the
 already loaded data; API errors show an error message.
+
+## Design theme
+
+Setup, authentication, Plan, and Settings follow the supplied Figma Make design:
+forest green, warm off-white backgrounds, sage selections, rounded cards, and
+segmented setup progress. The separate `studio` palette in
+`constants/studio-colors.json` keeps Home's existing theme and layout unchanged.
+
+`components/design/glass-surface.tsx` provides small glass surfaces for setup
+navigation, the Continue area, recipe labels, and account controls. It uses
+[Expo GlassEffect](https://docs.expo.dev/versions/v57.0.0/sdk/glass-effect/) when
+the native API is available, blur on supported fallback platforms, and a solid
+surface on Android or when Reduce Transparency is enabled. Glass is decorative;
+the controls and their accessibility labels remain ordinary React Native views.

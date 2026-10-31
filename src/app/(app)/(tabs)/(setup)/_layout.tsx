@@ -1,112 +1,18 @@
+import { SetupHeader } from '@/components/design/setup-chrome';
+import colors from '@/constants/studio-colors.json';
 import { Stack } from 'expo-router';
-import { Text, View } from 'react-native';
-import { setupColors } from '../../domain/setup-theme';
-
-function SetupProgressHeader({
-    currentStep,
-    totalSteps,
-}: {
-    currentStep: number;
-    totalSteps: number;
-}) {
-    const progress = currentStep / totalSteps;
-
-    return (
-        <View className="w-full px-4">
-            <Text className="text-sm font-semibold text-setup-dark text-center mb-2">
-                {currentStep} of {totalSteps}
-            </Text>
-
-            <View className="w-full h-2 bg-setup-border rounded-full overflow-hidden">
-                <View
-                    className="h-full bg-setup-primary rounded-full"
-                    style={{
-                        width: `${progress * 100}%` as `${number}%`,
-                    }}
-                />
-            </View>
-        </View>
-    );
-}
 
 export default function SetupLayout() {
-    const totalSteps = 5;
-
     return (
-        <Stack
-            screenOptions={{
-                headerTitleAlign: 'center',
-                headerShadowVisible: false,
-                headerTintColor: setupColors.primary,
-
-                headerStyle: {
-                    backgroundColor: setupColors.cream,
-                },
-
-                animation: 'slide_from_right',
-                animationDuration: 250,
-                gestureEnabled: true,
-            }}
-        >
-            <Stack.Screen
-                name="user-metrics"
-                options={{
-                    headerTitle: () => (
-                        <SetupProgressHeader
-                            currentStep={1}
-                            totalSteps={totalSteps}
-                        />
-                    ),
-                }}
-            />
-
-            <Stack.Screen
-                name="user-goals"
-                options={{
-                    headerTitle: () => (
-                        <SetupProgressHeader
-                            currentStep={2}
-                            totalSteps={totalSteps}
-                        />
-                    ),
-                }}
-            />
-
-            <Stack.Screen
-                name="user-plan"
-                options={{
-                    headerTitle: () => (
-                        <SetupProgressHeader
-                            currentStep={3}
-                            totalSteps={totalSteps}
-                        />
-                    ),
-                }}
-            />
-
-            <Stack.Screen
-                name="setup-meals"
-                options={{
-                    headerTitle: () => (
-                        <SetupProgressHeader
-                            currentStep={4}
-                            totalSteps={totalSteps}
-                        />
-                    ),
-                }}
-            />
-
-            <Stack.Screen
-                name="select-meals"
-                options={{
-                    headerTitle: () => (
-                        <SetupProgressHeader
-                            currentStep={5}
-                            totalSteps={totalSteps}
-                        />
-                    ),
-                }}
-            />
+        <Stack screenOptions={{
+            headerShadowVisible: false,
+            contentStyle: { backgroundColor: colors.cream },
+            animation: 'slide_from_right',
+            gestureEnabled: true,
+        }}>
+            {['user-metrics', 'user-goals', 'user-plan', 'setup-meals', 'select-meals'].map((name, index) => (
+                <Stack.Screen key={name} name={name} options={{ header: () => <SetupHeader step={index + 1} /> }} />
+            ))}
         </Stack>
     );
 }

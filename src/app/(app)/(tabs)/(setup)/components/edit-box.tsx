@@ -42,9 +42,9 @@ export default function EditBox({ title, value, setValue, boundaries, defaultVal
     };
 
     return (
-        <View className={"rounded-2xl border border-setup-border p-4 bg-setup-card shadow-xl shadow-setup-border " + className}>
-            <Text className="text-setup-muted font-medium">{title}</Text>
-            <View className="my-3 h-px bg-setup-border" />
+        <View className={"rounded-2xl border border-studio-border p-4 bg-studio-card shadow-sm shadow-studio-border " + className}>
+            <Text className="text-studio-muted font-medium">{title}</Text>
+            <View className="my-3 h-px bg-studio-border" />
 
             {isEditing ? (
                 <View className="gap-2">
@@ -53,29 +53,29 @@ export default function EditBox({ title, value, setValue, boundaries, defaultVal
                         onChangeText={setValue}
                         keyboardType="numeric"
                         placeholder="Enter value"
-                        className="rounded-lg border border-setup-border bg-setup-cream px-3 py-2 text-base text-setup-main"
+                        className="rounded-lg border border-studio-border bg-studio-cream px-3 py-2 text-base text-studio-main"
                     />
                     <TouchableOpacity
                         activeOpacity={0.85}
                         onPress={handleSave}
-                        className="rounded-lg bg-setup-primary px-3 py-2"
+                        className="rounded-lg bg-studio-primary px-3 py-2"
                     >
                         <Text className="text-center font-semibold text-white">Save</Text>
                     </TouchableOpacity>
                 </View>
             ) : (
-                <View className="flex-row items-center justify-between gap-2 bg-setup-card">
-                    <Text className="flex-1 text-xl font-bold text-setup-primary">
+                <View className="flex-row items-center justify-between gap-2 bg-studio-card">
+                    <Text className="flex-1 text-xl font-bold text-studio-primary">
                         {value} {specialCharacters}
                     </Text>
                     <TouchableOpacity
                         activeOpacity={0.8}
                         onPress={() => setIsEditing(true)}
-                        className="rounded-full bg-setup-soft px-3 py-1"
+                        className="rounded-full bg-studio-soft px-3 py-1"
                         accessibilityRole="button"
                         accessibilityLabel={`Edit ${title}`}
                     >
-                        <Text className="text-sm font-semibold text-setup-primary">Edit</Text>
+                        <Text className="text-sm font-semibold text-studio-primary">Edit</Text>
                     </TouchableOpacity>
                 </View>
             )}

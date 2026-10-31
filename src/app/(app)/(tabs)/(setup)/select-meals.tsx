@@ -1,3 +1,6 @@
+import CandidatePreview from '@/components/design/candidate-preview';
+import { SetupFooter } from '@/components/design/setup-chrome';
+import setupColors from '@/constants/studio-colors.json';
 import { authenticatedFetch, SessionExpiredError } from '@/src/lib/authenticated-fetch';
 import { getPlanIntent, saveIntentPlan, type PlanRequirements } from '@/src/lib/plan-creation-intent';
 import { useAuth } from '@clerk/expo';
@@ -7,7 +10,6 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { setupColors } from '../../domain/setup-theme';
 import SetupContinueButton from './components/setup-continue-button';
 
 
@@ -118,6 +120,7 @@ export default function SelectMeals() {
     const { getToken, isLoaded, isSignedIn, userId } = useAuth();
     const initializationStarted = useRef(false);
     const [planResponse, setPlanResponse] = useState<any>(null);
+    const [acceptedRecipieCount, setAcceptedRecipeCount] = useState(0);
     const [currentRecipe, setCurrentRecipe] = useState<any>(null);
     const [isUpdatingRecipe, setIsUpdatingRecipe] = useState(false);
     const [recipeError, setRecipeError] = useState<string | null>(null);
@@ -169,10 +172,10 @@ export default function SelectMeals() {
                 error instanceof SessionExpiredError
                     ? error.message
                     : pendingRefresh.current
-                    ? 'Your recipe was updated, but we could not load your plan. Refresh to continue.'
-                    : error instanceof TypeError
-                        ? 'Could not connect to the recipe service. Check your connection and try again.'
-                        : 'Could not update your recipe. Please try again.'
+                        ? 'Your recipe was updated, but we could not load your plan. Refresh to continue.'
+                        : error instanceof TypeError
+                            ? 'Could not connect to the recipe service. Check your connection and try again.'
+                            : 'Could not update your recipe. Please try again.'
             );
         } finally {
             recipeRequestInFlight.current = false;
@@ -237,7 +240,7 @@ export default function SelectMeals() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 bg-setup-cream">
+            <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-studio-cream">
                 <ScrollView
                     className="flex-1"
                     contentContainerClassName="px-5 pt-4 pb-6"
@@ -245,27 +248,20 @@ export default function SelectMeals() {
                 >
 
                     {/* Header Text */}
-                    <View className="items-center mb-6">
-                        <Text className="text-3xl font-bold text-setup-main mb-2 text-center">
+                    <View className="items-start mb-6">
+                        <Text className="text-3xl font-bold text-studio-main mb-2 tracking-tight">
                             Pick your recipes
                         </Text>
-                        <Text className="text-sm text-setup-muted text-center">
-                            {planResponse ? `${planResponse.accepted_recipe_count} out of ${planResponse.required_recipe_count}` : 'Loading...'}
+                        <Text className="text-sm leading-6 text-studio-muted">
+                            {planResponse ? `${acceptedRecipieCount} out of ${planResponse.required_recipe_count}` : 'Loading...'}
                         </Text>
                     </View>
 
                     {
                         currentRecipe && !isUpdatingRecipe ? (
-                            <View className="min-h-80 flex-col rounded-2xl bg-setup-card items-center justify-center border border-setup-border px-5 py-6">
-                                <View>
-                                    <Text>{currentRecipe.name}</Text>
-                                    <Text>Cook time: {currentRecipe.cookingDetails.cookTime}</Text>
-                                    <Text>Difficulty: {currentRecipe.cookingDetails.difficulty}</Text>
-                                    <Text>Calories: {currentRecipe.nutritionPerServing.calories}</Text>
-                                    <Text>Carbohydrates: {currentRecipe.nutritionPerServing.carbohydrates}</Text>
-                                    <Text>Fat: {currentRecipe.nutritionPerServing.fat}</Text>
-                                    <Text>Protein: {currentRecipe.nutritionPerServing.protein}</Text>
-                                </View>
+                            <View className="flex-col items-center justify-center">
+                                <CandidatePreview key={currentRecipe.recipe_id} recipe={currentRecipe} />
+                                <Text className="text-xs text-studio-muted mt-5">Keep what you love. We’ll find another for the rest.</Text>
                                 <View className="flex-row gap-8 mt-6">
 
                                     <TouchableOpacity
@@ -274,8 +270,11 @@ export default function SelectMeals() {
                                         accessibilityState={{ disabled: isUpdatingRecipe }}
                                         activeOpacity={0.75}
                                         disabled={isUpdatingRecipe}
-                                        onPress={() => updateRecipe('accept')}
-                                        className="bg-setup-primary w-20 h-20 rounded-full items-center justify-center shadow-sm"
+                                        onPress={() => {
+                                            updateRecipe('accept');
+                                            setAcceptedRecipeCount(acceptedRecipieCount + 1 < planResponse.required_recipe_count ? acceptedRecipieCount + 1 : acceptedRecipieCount);
+                                        }}
+                                        className="bg-studio-primary w-20 h-20 rounded-full items-center justify-center shadow-sm"
                                     >
                                         <Ionicons name="checkmark" size={28} color="white" />
                                         <Text className="text-white text-xs font-semibold">Accept</Text>
@@ -288,29 +287,29 @@ export default function SelectMeals() {
                                         activeOpacity={0.75}
                                         disabled={isUpdatingRecipe}
                                         onPress={() => updateRecipe('reject')}
-                                        className="bg-red-600 w-20 h-20 rounded-full items-center justify-center shadow-sm"
+                                        className="bg-white border border-studio-border w-20 h-20 rounded-full items-center justify-center shadow-sm"
                                     >
-                                        <Ionicons name="close" size={28} color="white" />
-                                        <Text className="text-white text-xs font-semibold">Reject</Text>
+                                        <Ionicons name="close" size={28} color="#e8693a" />
+                                        <Text className="text-studio-muted text-xs font-semibold">Skip</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
                         ) : (
                             <View
-                                className="min-h-80 rounded-2xl bg-setup-card items-center justify-center border border-setup-border px-5 py-6"
+                                className="min-h-80 rounded-2xl bg-studio-card items-center justify-center border border-studio-border px-5 py-6"
                                 accessibilityLiveRegion="polite"
                                 accessibilityState={{ busy: isUpdatingRecipe || (!isPlanComplete && !recipeError) }}
                             >
                                 {(isUpdatingRecipe || (!isPlanComplete && !recipeError)) && (
-                                    <View className="w-20 h-20 rounded-full bg-setup-soft items-center justify-center mb-4">
+                                    <View className="w-20 h-20 rounded-full bg-studio-soft items-center justify-center mb-4">
                                         <ActivityIndicator size="large" color={setupColors.primary} />
                                     </View>
                                 )}
-                                <Text className="text-lg font-semibold text-setup-main text-center">
+                                <Text className="text-lg font-semibold text-studio-main text-center">
                                     {isUpdatingRecipe ? 'Preparing your next recipe...' : isPlanComplete ? 'All recipes accepted!' : recipeError ? 'Recipe unavailable.' : 'Loading your recipes...'}
                                 </Text>
                                 {(isUpdatingRecipe || (!isPlanComplete && !recipeError)) && (
-                                    <Text className="text-sm text-setup-muted text-center mt-2">
+                                    <Text className="text-sm leading-6 text-studio-muted mt-2">
                                         This may take a moment. Your recipe will appear here when it’s ready.
                                     </Text>
                                 )}
@@ -345,18 +344,18 @@ export default function SelectMeals() {
                 </ScrollView>
 
                 {/* Finalize Button */}
-                <View className="px-5 pt-3 pb-4">
+                <SetupFooter>
                     <SetupContinueButton
                         href={{
                             pathname: "/(app)/(tabs)/home",
                             params: { generationId: planResponse?.generation_id },
                         }}
-                        label="Pick my Recipes"
+                        label="View my plan"
                         disabled={isUpdatingRecipe || !isPlanComplete}
                         onPress={() => console.log('Finalize button pressed')}
                         replace={true}
                     />
-                </View>
+                </SetupFooter>
             </SafeAreaView>
         </SafeAreaProvider>
     )

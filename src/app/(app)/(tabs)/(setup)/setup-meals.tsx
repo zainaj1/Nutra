@@ -1,6 +1,8 @@
-import { useAuth } from '@clerk/expo';
+import { PageHeading, SetupFooter } from '@/components/design/setup-chrome';
+import { Ionicons } from '@expo/vector-icons';
+import colors from '@/constants/studio-colors.json';
 import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import GenericButton from './components/generic-button';
 import SetupContinueButton from './components/setup-continue-button';
@@ -22,7 +24,6 @@ export default function SetupMeals() {
     const [cookDayCount, setCookDayCount] = useState(0);
     const [people, setPeople] = useState(1);
     const [meals, setMeals] = useState('');
-    const { getToken } = useAuth();
 
     function handleCookDaysChange(day: string) {
         if (cookDays.includes(day)) {
@@ -55,85 +56,63 @@ export default function SetupMeals() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 bg-setup-cream">
+            <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-studio-cream">
                 <ScrollView
                     className="flex-1"
                     contentContainerClassName="px-5 pt-4 pb-6"
                     showsVerticalScrollIndicator={false}
                 >
 
-                    {/* Header Text */}
-                    <View className="items-center mb-6">
-                        <Text className="text-3xl font-bold text-setup-main mb-2 text-center">
-                            Plan your Meals
-                        </Text>
-                        <Text className="text-sm text-setup-muted text-center">
-                            Tell us how you like to cook and we&apos;ll build around your schedule.
-                        </Text>
+                    <PageHeading title="Make room for good food" subtitle="A plan that fits your week, your table, and the meals you love." />
+                    <Text className="text-xs uppercase tracking-widest font-semibold text-studio-muted mb-3">Cooking days</Text>
+                    <View className="bg-white rounded-2xl border border-studio-border p-4 mb-6">
+                        <View className="flex-row justify-between gap-1 w-full">
+                            {Object.keys(cookDayMap).map((day) => (
+                                <GenericButton key={day} label={cookDayMap[day]} accessibilityLabel={['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][Number(day) - 1]} selected={cookDays.includes(day)} onPress={() => handleCookDaysChange(day)} />
+                            ))}
+                        </View>
+                        <Text className="text-xs text-studio-muted mt-4">{cookDayCount ? `${cookDayCount} cooking days · ${convertCookDaysToString(cookDays)}` : 'Choose the days you’d like to cook.'}</Text>
                     </View>
 
-                    <Text className="text-sm text-setup-muted mb-2">
-                        Which Days would you like to cook?
-                    </Text>
-                    <View className="flex-col items-center gap-2 bg-setup-card rounded-xl border border-setup-border px-4 py-4 mb-4 shadow-xl shadow-setup-border">
-                        <View className="flex-row justify-center gap-1 w-full">
-                            {
-                                Object.keys(cookDayMap).map((day) => (
-                                    <GenericButton
-                                        key={day}
-                                        label={cookDayMap[day]}
-                                        selected={cookDays.includes(day)}
-                                        onPress={() => handleCookDaysChange(day)}
-                                    />
-                                ))
-                            }
+                    <Text className="text-xs uppercase tracking-widest font-semibold text-studio-muted mb-3">Around your table</Text>
+                    <View className="flex-row items-center justify-between gap-3 bg-white rounded-2xl border border-studio-border p-4 mb-6">
+                        <View className="flex-1">
+                            <Text className="text-base font-semibold text-studio-main">How many people?</Text>
+                            <Text className="text-xs text-studio-muted mt-1">We’ll adjust the serving sizes.</Text>
                         </View>
-                        <Text>
-                            Cook Days: {convertCookDaysToString(cookDays)}
-                        </Text>
+                        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Fewer people" accessibilityState={{ disabled: people <= 1 }} disabled={people <= 1}
+                            onPress={() => setPeople(Math.max(1, people - 1))} className="w-11 h-11 border border-studio-border rounded-xl items-center justify-center" style={{ opacity: people <= 1 ? 0.4 : 1 }}>
+                            <Ionicons name="remove" size={20} color={colors.primary} />
+                        </TouchableOpacity>
+                        <Text className="text-xl font-bold text-studio-primary">{people}</Text>
+                        <TouchableOpacity accessibilityRole="button" accessibilityLabel="More people" accessibilityState={{ disabled: people >= 5 }} disabled={people >= 5}
+                            onPress={() => setPeople(Math.min(5, people + 1))} className="w-11 h-11 border border-studio-border rounded-xl items-center justify-center" style={{ opacity: people >= 5 ? 0.4 : 1 }}>
+                            <Ionicons name="add" size={20} color={colors.primary} />
+                        </TouchableOpacity>
                     </View>
 
-                    <Text> How many people are you cooking for?</Text>
-                    <View className="flex-col items-center gap-2 bg-setup-card rounded-xl border border-setup-border px-4 py-4 mb-4 shadow-xl shadow-setup-border">
-                        <View className="flex-row justify-center gap-1 w-full">
-                            {
-                                [1, 2, 3, 4, 5].map((num) => (
-                                    <GenericButton
-                                        key={num}
-                                        label={num.toString()}
-                                        selected={people === num}
-                                        onPress={() => setPeople(num)}
-                                    />
-                                ))
-                            }
-                        </View>
-                        <Text>
-                            People: {people}
-                        </Text>
+                    <Text className="text-xs uppercase tracking-widest font-semibold text-studio-muted mb-3">Meals to plan</Text>
+                    <View className="gap-3 mb-5">
+                        {mealTypes.map((meal, index) => {
+                            const selected = meals.includes(meal);
+                            const icons = ['sunny-outline', 'partly-sunny-outline', 'moon-outline', 'ice-cream-outline'] as const;
+                            const descriptions = ['A good start to your day', 'A little midday fuel', 'Something to look forward to', 'Room for a little sweetness'];
+                            return <TouchableOpacity key={meal} accessibilityRole="button" accessibilityLabel={meal} accessibilityState={{ selected }} onPress={() => handleMealsChange(meal)}
+                                className={'flex-row items-center gap-4 rounded-2xl border p-4 ' + (selected ? 'bg-studio-soft border-studio-primary' : 'bg-white border-studio-border')}>
+                                <View className="w-11 h-11 rounded-xl bg-studio-cream items-center justify-center"><Ionicons name={icons[index]} size={23} color={colors.primary} /></View>
+                                <View className="flex-1"><Text className="capitalize text-base font-bold text-studio-main">{meal}</Text><Text className="text-xs text-studio-muted mt-1">{descriptions[index]}</Text></View>
+                                <Ionicons name={selected ? 'checkmark-circle' : 'ellipse-outline'} size={23} color={selected ? colors.primary : '#cdd4cc'} />
+                            </TouchableOpacity>;
+                        })}
                     </View>
-
-                    <Text>Which Meals would you like to prepare</Text>
-                    <View className="flex-col items-center gap-2 bg-setup-card rounded-xl border border-setup-border px-4 py-4 mb-4 shadow-xl shadow-setup-border">
-                        <View className="flex-row justify-center gap-1 w-full">
-                            {
-                                mealTypes.map((meal) => (
-                                    <GenericButton
-                                        key={meal}
-                                        label={meal}
-                                        selected={meals.includes(meal)}
-                                        onPress={() => handleMealsChange(meal)}
-                                    />
-                                ))
-                            }
-                        </View>
-                        <Text>
-                            Meals: {convertMealsToString(meals)}
-                        </Text>
+                    <View className="flex-row gap-3 bg-studio-soft border border-studio-border rounded-2xl p-4">
+                        <Ionicons name="calendar-outline" size={22} color={colors.primary} />
+                        <Text className="flex-1 text-sm text-studio-dark leading-5">{cookDayCount && meals ? `${cookDayCount} days of ${convertMealsToString(meals)} for ${people}. Your week is taking shape.` : 'Choose your cooking days and meals to start building your week.'}</Text>
                     </View>
                 </ScrollView>
 
                 {/* Finalize Button */}
-                <View className="px-5 pt-3 pb-4">
+                <SetupFooter>
                     <SetupContinueButton
                         href={{
                             pathname: "/(app)/(tabs)/(setup)/select-meals",
@@ -143,9 +122,10 @@ export default function SetupMeals() {
                                 meals: meals
                             }
                         }}
-                        label="Pick my Recipes"
+                        label="Find my recipes"
+                        disabled={cookDayCount === 0 || meals.length === 0}
                     />
-                </View>
+                </SetupFooter>
             </SafeAreaView>
         </SafeAreaProvider>
     )

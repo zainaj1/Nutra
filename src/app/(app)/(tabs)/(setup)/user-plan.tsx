@@ -1,10 +1,13 @@
+import { SetupFooter } from '@/components/design/setup-chrome';
+import GlassSurface from '@/components/design/glass-surface';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@clerk/expo';
 import { Ionicons } from '@expo/vector-icons';
 import { File, Paths } from 'expo-file-system';
 import { useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { setupColors } from '../../domain/setup-theme';
+import setupColors from '@/constants/studio-colors.json';
 import SetupContinueButton from './components/setup-continue-button';
 import TargetDivider from './components/target-divider';
 import TargetRow from './components/target-row';
@@ -89,7 +92,7 @@ export default function FinalizePlan() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 bg-setup-cream">
+            <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-studio-cream">
                 <ScrollView
                     className="flex-1"
                     contentContainerClassName="px-5 pt-4 pb-6"
@@ -97,21 +100,24 @@ export default function FinalizePlan() {
                 >
 
                     {/* Header Text */}
-                    <View className="items-center mb-6">
-                        <Text className="text-3xl font-bold text-setup-main mb-2 text-center">
-                            Your Plan is Ready
-                        </Text>
-                        <Text className="text-sm text-setup-muted text-center">
-                            Here is your personalized calorie and macro guide.
-                        </Text>
-                    </View>
+                    <LinearGradient colors={['#3d7b50', '#5a9e6f']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+                        style={{ borderRadius: 24, padding: 24, marginBottom: 24, overflow: 'hidden' }}>
+                        <View pointerEvents="none" style={{ position: 'absolute', right: -24, top: -30, width: 150, height: 150, borderRadius: 75, backgroundColor: '#ffffff12' }} />
+                        <Text className="text-white/70 text-xs font-bold tracking-widest uppercase mb-3">Your personal plan</Text>
+                        <Text accessibilityRole="header" className="text-white text-3xl font-bold mb-2">Ready to go.</Text>
+                        <Text className="text-white/80 text-sm leading-6 mb-5">Daily targets, tailored to your body and your goals.</Text>
+                        <GlassSurface style={{ padding: 16, backgroundColor: 'transparent', borderColor: '#ffffff55' }}>
+                            <Text className="text-studio-main text-3xl font-bold">{userPlan.planCalories.toFixed(0)}</Text>
+                            <Text className="text-studio-dark text-xs font-semibold mt-1">kcal per day</Text>
+                        </GlassSurface>
+                    </LinearGradient>
 
                     {/* Plan Overview */}
-                    <View className="flex-col gap-3 justify-center rounded-2xl border border-setup-border bg-setup-card px-4 py-4 mb-4 shadow-xl shadow-setup-border">
+                    <View className="flex-col gap-3 justify-center rounded-2xl border border-studio-border bg-studio-card px-4 py-4 mb-4 shadow-sm shadow-studio-border">
 
                         <View className="flex-row items-center">
-                            <Text className="font-bold text-setup-main"> Daily Targets </Text>
-                            <Text className="text-setup-muted text-sm"> (rough estimate ) </Text>
+                            <Text className="font-bold text-studio-main"> Daily Targets </Text>
+                            <Text className="text-studio-muted text-sm"> (rough estimate ) </Text>
                         </View>
 
                         <TargetRow
@@ -148,10 +154,10 @@ export default function FinalizePlan() {
                     </View>
 
                     {/* Timeline  */}
-                    <View className="flex-row gap-3 rounded-2xl border border-setup-border bg-setup-card px-4 py-4 mb-4 shadow-xl shadow-setup-border">
+                    <View className="flex-row gap-3 rounded-2xl border border-studio-border bg-studio-card px-4 py-4 mb-4 shadow-sm shadow-studio-border">
 
                         {/* icon */}
-                        <View className="mr-2 w-16 h-16 shrink-0 rounded-full bg-setup-soft items-center justify-center">
+                        <View className="mr-2 w-16 h-16 shrink-0 rounded-full bg-studio-soft items-center justify-center">
                             <Ionicons
                                 name="calendar-outline"
                                 size={30}
@@ -160,14 +166,14 @@ export default function FinalizePlan() {
                         </View>
 
                         {/* Value */}
-                        <View className="flex-col">
-                            <Text className="text-md font-bold text-setup-main">
+                        <View className="flex-1 flex-col">
+                            <Text className="text-md font-bold text-studio-main">
                                 Expected Timeline
                             </Text>
-                            <Text className="text-xl font-bold text-setup-main mb-0.5">
+                            <Text className="text-xl font-bold text-studio-main mb-0.5">
                                 ~{userPlan.totalWeeksToReachGoal.toFixed()} weeks to goal
                             </Text>
-                            <Text className="text-setup-muted">
+                            <Text className="text-studio-muted">
                                 Based on ~{pace.toFixed(1)} lb per week
                             </Text>
                         </View>
@@ -176,7 +182,7 @@ export default function FinalizePlan() {
 
 
                     {/* Warning message  */}
-                    <View className="flex-row gap-3 rounded-2xl border border-setup-border bg-setup-soft px-4 py-4 mb-2 shadow-sm shadow-setup-border">
+                    <View className="flex-row gap-3 rounded-2xl border border-studio-border bg-studio-soft px-4 py-4 mb-2 shadow-sm shadow-studio-border">
 
                         <Ionicons
                             name="information-circle-outline"
@@ -186,7 +192,7 @@ export default function FinalizePlan() {
 
                         {/* Value */}
                         <View className="flex-1 flex-col">
-                            <Text className="text-sm text-setup-dark">
+                            <Text className="text-sm text-studio-dark">
                                 {warningMessage}
                             </Text>
                         </View>
@@ -195,7 +201,7 @@ export default function FinalizePlan() {
                 </ScrollView>
 
                 {/* Finalize Button */}
-                <View className="px-5 pt-3 pb-4">
+                <SetupFooter>
                     <SetupContinueButton
                         href={{
                             pathname: "/(app)/(tabs)/(setup)/setup-meals"
@@ -203,7 +209,7 @@ export default function FinalizePlan() {
                         label="Setup my Meals"
                         onPress={handleFinalizePlan}
                     />
-                </View>
+                </SetupFooter>
             </SafeAreaView>
         </SafeAreaProvider>
     )

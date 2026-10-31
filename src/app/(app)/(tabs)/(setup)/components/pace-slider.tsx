@@ -1,7 +1,7 @@
 import ExpoSlider from '@expo/ui/community/slider';
 import { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
-import { setupColors } from '../../../domain/setup-theme';
+import setupColors from '@/constants/studio-colors.json';
 
 type PaceSliderProps = {
     value: number;
@@ -65,7 +65,7 @@ export default function PaceSlider({
                 {/* Bubble */}
                 {showBubble && sliderWidth > 0 && (
                     <View
-                        className="absolute top-0 bg-setup-primary px-3 py-1 rounded-full z-10"
+                        className="absolute top-0 bg-studio-primary px-3 py-1 rounded-full z-10"
                         style={{
                             left: bubbleLeft,
                             transform: [{ translateX: -38 }],
@@ -100,7 +100,7 @@ export default function PaceSlider({
                             key={tick}
                             className={
                                 "w-px rounded-full " +
-                                (tick <= value ? "bg-setup-olive" : "bg-setup-border") +
+                                (tick <= value ? "bg-studio-olive" : "bg-studio-border") +
                                 (majorTicks.includes(tick) ? " h-3" : " h-1.5")
                             }
                         />
@@ -113,7 +113,7 @@ export default function PaceSlider({
                             key={tick}
                             className={
                                 "w-2 h-2 rounded-full " +
-                                (tick <= value ? "bg-setup-primary" : "bg-setup-olive")
+                                (tick <= value ? "bg-studio-primary" : "bg-studio-olive")
                             }
                         />
                     ))}
@@ -136,13 +136,13 @@ export default function PaceSlider({
                             <Text
                                 className={
                                     "text-xs font-medium text-center " +
-                                    (tick === value ? "text-setup-dark" : "text-setup-muted")
+                                    (tick === value ? "text-studio-dark" : "text-studio-muted")
                                 }
                             >
                                 {tick.toFixed(1)}
                             </Text>
 
-                            <Text className="text-xs text-setup-muted text-center">
+                            <Text className="text-xs text-studio-muted text-center">
                                 lb/week
                             </Text>
                         </View>

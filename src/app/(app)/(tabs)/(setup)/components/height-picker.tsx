@@ -1,3 +1,4 @@
+import colors from '@/constants/studio-colors.json';
 import { Picker } from '@expo/ui/community/picker';
 import { Text, View } from 'react-native';
 
@@ -9,7 +10,8 @@ type HeightPickerProps = {
     className?: string;
 };
 
-const PICKER_ITEM_STYLE = { fontSize: 14 };
+// Keep both native wheel labels readable against the always-white card.
+const PICKER_ITEM_STYLE = { fontSize: 14, color: colors.textMain };
 
 export default function HeightPicker({
     heightFeet,
@@ -28,22 +30,22 @@ export default function HeightPicker({
     return (
         <View
             className={
-                "rounded-2xl bg-setup-card items-center justify-center shadow-xl shadow-setup-border border border-setup-border " +
+                "rounded-2xl bg-studio-card items-center justify-center shadow-sm shadow-studio-border border border-studio-border " +
                 className
             }
 
-            style={{ elevation: 4 }}
+            style={{ elevation: 1 }}
         >
-            <Text className="text-setup-main text-sm mb-1 font-bold">
+            <Text className="text-studio-muted text-xs uppercase tracking-wider mb-2 font-semibold">
                 Height
             </Text>
 
-            <Text className="text-lg font-bold text-setup-primary mb-2">
+            <Text className="text-2xl font-bold text-studio-primary mb-2">
                 {`${heightFeet}'${heightInches}`}
             </Text>
 
             <View className="w-full flex-row items-center mb-2 px-5">
-                <View className="flex-1 h-px bg-setup-border" />
+                <View className="flex-1 h-px bg-studio-border" />
             </View>
 
             <View className="flex-row items-center justify-center gap-1">

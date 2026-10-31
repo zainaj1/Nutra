@@ -1,9 +1,9 @@
+import AuthPage from '@/components/design/auth-page';
 import { useAuth, useSignUp } from '@clerk/expo'
 import { Ionicons } from '@expo/vector-icons'
 import { type Href, Link, useRouter } from 'expo-router'
 import React from 'react'
 import { Dimensions, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 
 export default function Page() {
@@ -83,18 +83,18 @@ export default function Page() {
         signUp.missingFields.length === 0
     ) {
         return (
-            <SafeAreaProvider className="flex-1">
-                <View className="flex-1 px-6">
+            <AuthPage>
+                <View className="flex-1">
                     <View className="flex-1 justify-center">
                         {/* Logo */}
                         <View className="items-center mb-6" style={{ flexShrink: 1 }}>
-                            <View className="w-20 h-15 bg-gradient-to- br from-blue-500 to-purple-600 rounded-2xl items-center justify-center mb-2 shadow-lg">
+                            <View className="w-20 h-20 bg-studio-primary rounded-2xl items-center justify-center mb-2 shadow-sm">
                                 <Ionicons name="restaurant-outline" size={iconSize} color="white" />
                             </View>
-                            <Text className="text-3xl font-bold text-gray-900 mb-2">
+                            <Text className="text-3xl font-bold text-studio-main mb-2">
                                 Join Nutra
                             </Text>
-                            <Text className="text-lg text-gray-600 text-center">
+                            <Text className="text-lg text-studio-muted text-center">
                                 A nutrition and meal planning app{"\n"} to help you stay on track
                             </Text>
                         </View>
@@ -103,13 +103,13 @@ export default function Page() {
 
                         <KeyboardAvoidingView
                             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6" style={{ flexShrink: 1 }}
+                            className="bg-white rounded-3xl p-6 shadow-sm border border-studio-border mb-6" style={{ flexShrink: 1 }}
                         >
-                            <Text className="text-xl text-gray-900 font-bold text-center mb-4">
+                            <Text className="text-xl text-studio-main font-bold text-center mb-4">
                                 Verify your account
                             </Text>
 
-                            <View className="flex-row items-center bg-gray-50 rounded-xl border-gray-200 border px-4 py-4 mb-2">
+                            <View className="flex-row items-center bg-studio-cream rounded-xl border-studio-border border px-4 py-4 mb-2">
                                 <Ionicons name="mail-outline" size={20} color="#6B7280" />
                                 <TextInput
                                     value={code}
@@ -125,7 +125,7 @@ export default function Page() {
                             <TouchableOpacity
                                 onPress={handleVerify}
                                 disabled={fetchStatus === 'fetching'}
-                                className={"rounded-xl py-4 px-4 shadow-sm mb-2 " + (isLoading ? "bg-gray-400" : "bg-blue-600")}
+                                className={"rounded-xl py-4 px-4 shadow-sm mb-2 " + (isLoading ? "bg-gray-400" : "bg-studio-primary")}
                                 activeOpacity={0.8}
                             >
                                 <View className="flex-row items-center justify-center">
@@ -139,31 +139,31 @@ export default function Page() {
                                 <Pressable
                                     onPress={() => signUp.verifications.sendEmailCode()}
                                 >
-                                    <Text className="text-blue-600 font-semibold">I need a new code</Text>
+                                    <Text className="text-studio-primary font-semibold">I need a new code</Text>
                                 </Pressable>
                             </View>
                         </KeyboardAvoidingView>
                     </View>
                 </View >
-            </SafeAreaProvider >
+            </AuthPage>
         )
     }
     return (
-        <SafeAreaProvider className="flex-1">
-            <View className="flex-1 px-5">
+        <AuthPage>
+            <View className="flex-1">
                 {/* Header Section */}
 
                 <View className="flex-1 justify-center">
 
                     {/* Logo */}
                     <View className="items-center mb-6" style={{ flexShrink: 1 }}>
-                        <View className="w-20 h-15 bg-gradient-to- br from-blue-500 to-purple-600 rounded-2xl items-center justify-center mb-2 shadow-lg">
+                        <View className="w-20 h-20 bg-studio-primary rounded-2xl items-center justify-center mb-2 shadow-sm">
                             <Ionicons name="restaurant-outline" size={iconSize} color="white" />
                         </View>
-                        <Text className="text-3xl font-bold text-gray-900 mb-2">
+                        <Text className="text-3xl font-bold text-studio-main mb-2">
                             Join Nutra
                         </Text>
-                        <Text className="text-lg text-gray-600 text-center">
+                        <Text className="text-lg text-studio-muted text-center">
                             A nutrition and meal planning app{"\n"} to help you stay on track
                         </Text>
                     </View>
@@ -172,19 +172,19 @@ export default function Page() {
                     {/* Sign-up form  */}
                     <KeyboardAvoidingView
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                        className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-4" style={{ flexShrink: 1 }}
+                        className="bg-white rounded-3xl p-6 shadow-sm border border-studio-border mb-4" style={{ flexShrink: 1 }}
                     >
                         {/* Form header */}
-                        <Text className="text-xl text-gray-900 font-bold text-center mb-4">
+                        <Text className="text-xl text-studio-main font-bold text-center mb-4">
                             Create your account
                         </Text>
 
                         {/* username Input  */}
-                        <Text className="text-sm font-medium text-gray-700 mb-2">
+                        <Text className="text-sm font-medium text-studio-main mb-2">
                             Username
                         </Text>
 
-                        <View className="flex-row items-center bg-gray-50 rounded-xl border-gray-200 border px-4 py-4 mb-2">
+                        <View className="flex-row items-center bg-studio-cream rounded-xl border-studio-border border px-4 py-4 mb-2">
                             <Ionicons name="person-outline" size={20} color="#6B7280" />
                             <TextInput
                                 autoCapitalize="none"
@@ -193,7 +193,7 @@ export default function Page() {
                                 placeholderTextColor="#666666"
                                 onChangeText={(username) => setUsername(username)}
                                 keyboardType="email-address"
-                                className="flex-1 ml-3 text-gray-900"
+                                className="flex-1 ml-3 text-studio-main"
                                 editable={!isLoading}
 
                             />
@@ -203,11 +203,11 @@ export default function Page() {
                         </View>
 
                         {/* Email Input  */}
-                        <Text className="text-sm font-medium text-gray-700 mb-2">
+                        <Text className="text-sm font-medium text-studio-main mb-2">
                             Email
                         </Text>
 
-                        <View className="flex-row items-center bg-gray-50 rounded-xl border-gray-200 border px-4 py-4 mb-2">
+                        <View className="flex-row items-center bg-studio-cream rounded-xl border-studio-border border px-4 py-4 mb-2">
                             <Ionicons name="mail-outline" size={20} color="#6B7280" />
                             <TextInput
                                 autoCapitalize="none"
@@ -216,7 +216,7 @@ export default function Page() {
                                 placeholderTextColor="#666666"
                                 onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
                                 keyboardType="email-address"
-                                className="flex-1 ml-3 text-gray-900"
+                                className="flex-1 ml-3 text-studio-main"
                                 editable={!isLoading}
 
                             />
@@ -226,11 +226,11 @@ export default function Page() {
                         </View>
 
                         {/* Password Input  */}
-                        <Text className="text-sm font-medium text-gray-700 mb-2">
+                        <Text className="text-sm font-medium text-studio-main mb-2">
                             Password
                         </Text>
 
-                        <View className="flex-row items-center bg-gray-50 rounded-xl border-gray-200 border px-4 py-4 mb-2">
+                        <View className="flex-row items-center bg-studio-cream rounded-xl border-studio-border border px-4 py-4 mb-2">
                             <Ionicons name="lock-closed-outline" size={20} color="#6B7280" />
                             <TextInput
                                 value={password}
@@ -238,7 +238,7 @@ export default function Page() {
                                 placeholderTextColor="#666666"
                                 secureTextEntry={true}
                                 onChangeText={(password) => setPassword(password)}
-                                className="flex-1 ml-3 text-gray-900"
+                                className="flex-1 ml-3 text-studio-main"
                                 editable={!isLoading}
                             />
                             {errors.fields.password && (
@@ -254,7 +254,7 @@ export default function Page() {
                         <TouchableOpacity
                             onPress={handleSubmit}
                             disabled={!emailAddress || !password || fetchStatus === 'fetching' || isLoading}
-                            className={"rounded-xl py-2 px-4 shadow-sm mb-1 " + (isLoading ? "bg-gray-400" : "bg-blue-600")}
+                            className={"rounded-xl py-4 px-4 shadow-sm mb-1 " + (isLoading ? "bg-gray-400" : "bg-studio-primary")}
                             activeOpacity={0.8}
                         >
                             <View className="flex-row items-center justify-center">
@@ -272,11 +272,11 @@ export default function Page() {
                     </KeyboardAvoidingView>
 
                     <View className="flex-row items-center justify-center mb-6">
-                        <Text className="text-gray-600">
+                        <Text className="text-studio-muted">
                             Already have an account?
                         </Text>
                         <Link href="/sign-in">
-                            <Text className="text-blue-600 font-semibold"> Sign in</Text>
+                            <Text className="text-studio-primary font-semibold"> Sign in</Text>
                         </Link>
                     </View>
 
@@ -291,6 +291,6 @@ export default function Page() {
                 </View>
 
             </View>
-        </SafeAreaProvider >
+        </AuthPage>
     )
 }
