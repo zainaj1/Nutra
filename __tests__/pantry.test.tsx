@@ -83,7 +83,7 @@ it('loads directly from the route, preserves duplicate rows and quantities, and 
     await waitFor(() => expect(screen.getByText('Chicken breast')).toBeTruthy());
     expect(screen.getByRole('header', { name: 'Groceries for your plan' })).toBeTruthy();
     expect(screen.getAllByText('Oil')).toHaveLength(3);
-    for (const value of ['750 g', '12 count', '100.5 ml', '1e-9 pinch', '2 ml']) expect(screen.getByText(value)).toBeTruthy();
+    for (const value of ['750 g', '12 eggs', 'Recipe total: 12 count', '100.5 ml', '1e-9 pinch', '2 ml']) expect(screen.getByText(value)).toBeTruthy();
     expect(authenticatedFetch).toHaveBeenCalledWith(getToken, expect.stringContaining('/plan_generations/plan%2F1/grocery_list'), expect.any(Object));
     await fireEvent.press(screen.getByRole('button', { name: 'Back to plan' }));
     expect(mockPush).toHaveBeenCalledWith({ pathname: '/(app)/(tabs)/(setup)/select-meals', params: { generationId: 'plan/1' } });
@@ -108,6 +108,26 @@ it('shows an empty state only for a successful empty list', async () => {
     jest.mocked(authenticatedFetch).mockResolvedValue(response({ generation_id: 'pantry-uuid', items: [] }));
     const screen = await render(<Pantry />);
     await waitFor(() => expect(screen.getByText('Your grocery list is empty.')).toBeTruthy());
+});
+
+it('shows whole-item estimates with original totals and keeps every duplicate ingredient row', async () => {
+    const items = [
+        { name: 'Tomatoes', quantity: 300, unit: 'g' },
+        { name: 'Tomatoes', quantity: 150, unit: 'g' },
+        { name: 'Tomatoes', quantity: 2, unit: 'count' },
+        { name: 'Tomatoes', quantity: 100, unit: 'ml' },
+        { name: 'Onion powder', quantity: 10, unit: 'g' },
+    ];
+    jest.mocked(authenticatedFetch).mockResolvedValue(response({ generation_id: 'pantry-uuid', items }));
+    const screen = await render(<Pantry />);
+    await waitFor(() => expect(screen.getByText('About 2 medium tomatoes')).toBeTruthy());
+    expect(screen.getAllByText('Tomatoes')).toHaveLength(4);
+    for (const label of ['About 1 medium tomato', '2 tomatoes', 'Recipe total: 300 g', 'Recipe total: 150 g', 'Recipe total: 2 count', '100 ml', '10 g']) {
+        expect(screen.getByText(label)).toBeTruthy();
+    }
+    expect(items[0]).toEqual({ name: 'Tomatoes', quantity: 300, unit: 'g' });
+    expect(authenticatedFetch).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(authenticatedFetch).mock.calls[0][1]).toContain('/plan%2F1/grocery_list');
 });
 
 it.each(['IN_PROGRESS', 'COMPLETED', 'CANCELLED'])('handles an unavailable pantry for %s', async status => {

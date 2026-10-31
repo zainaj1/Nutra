@@ -1,7 +1,8 @@
 import { PageHeading } from '@/components/design/setup-chrome';
+import { GroceryRow } from '@/components/grocery-row';
 import colors from '@/constants/studio-colors.json';
 import { SessionExpiredError } from '@/src/lib/authenticated-fetch';
-import { formatQuantity, loadPantry, type PantryResult } from '@/src/lib/pantry';
+import { loadPantry, type PantryResult } from '@/src/lib/pantry';
 import { useAuth, useClerk } from '@clerk/expo';
 import { File, Paths } from 'expo-file-system';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -98,10 +99,10 @@ function PantryContent({ planId }: { planId?: string }) {
                 </TouchableOpacity>
             </View> : state.kind === 'ready' ? <View className="bg-white rounded-3xl border border-studio-border p-5">
                 {state.items.length === 0 ? <Text className="text-studio-muted py-6">Your grocery list is empty.</Text>
-                    : state.items.map((item, index) => <View key={index} className="flex-row flex-wrap items-start justify-between gap-3 py-4 border-b border-studio-border">
-                        <Text className="text-base font-semibold text-studio-main flex-grow flex-shrink basis-40">{item.name}</Text>
-                        <Text className="text-base text-studio-muted">{formatQuantity(item.quantity)}{item.unit ? ` ${item.unit}` : ''}</Text>
-                    </View>)}
+                    : <>
+                        <Text className="text-sm text-studio-muted mb-2">Whole-item estimates are rounded up for shopping. Sizes vary; use the recipe totals when cooking.</Text>
+                        {state.items.map((item, index) => <GroceryRow key={index} item={item} />)}
+                    </>}
             </View> : <View accessibilityRole="alert" accessibilityLiveRegion="polite" className="bg-white rounded-3xl border border-studio-border p-6">
                 <Text className="text-lg font-semibold text-studio-main mb-3">
                     {state.kind === 'missing-plan' ? 'This plan is unavailable' : unavailable ? 'Grocery list not available' : 'Groceries unavailable'}

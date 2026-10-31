@@ -113,8 +113,12 @@ a missing linked plan never triggers creation of a replacement.
 
 Pantry fetches `/api/plan_generations/{plan-id}/grocery_list` using the Clerk
 authenticated client. It ignores the response's `generation_id` (a pantry UUID),
-preserves every item row and unit, and displays quantities without fixed decimal
-rounding. Very small quantities may use scientific notation. There are no editing
+preserves every item row and original quantity. Familiar raw produce and eggs show
+approximate whole shopping items, with original recipe totals underneath; known
+count units get natural names such as "12 eggs". Unsupported foods and measures
+keep their supplied quantities without fixed decimal rounding. See
+[grocery quantity rules and sources](docs/grocery-quantities.md) for coverage and
+limitations. Very small unconverted quantities may use scientific notation. There are no editing
 or persisted checkbox controls.
 
 State is scoped to the signed-in user and route plan. Each focus and explicit retry
