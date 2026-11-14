@@ -103,7 +103,8 @@ already loaded data; API errors show an error message.
 
 Groceries live in the bottom navigation's **Groceries** tab. Opening the tab directly
 loads the current saved plan; no saved plan shows a link to Home to get started.
-Completed recipe selection and Home offer **View groceries**, which opens Groceries.
+Recipe selection shows **Confirm plan** only after all recipes are accepted,
+returning to Home. Home offers **View groceries**, which opens Groceries.
 The protected route `/plan?generationId=<plan-id>` uses the existing query-parameter convention and
 exports as a static page, allowing direct navigation and refresh for arbitrary
 plan IDs without generating individual pages at build time. Older `/pantry` links

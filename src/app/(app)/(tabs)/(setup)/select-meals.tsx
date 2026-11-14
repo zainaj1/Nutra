@@ -131,7 +131,6 @@ function SelectMealsContent() {
     const { getToken, isLoaded, isSignedIn, userId } = useAuth();
     const initializationStarted = useRef(false);
     const [planResponse, setPlanResponse] = useState<any>(null);
-    const [acceptedRecipieCount, setAcceptedRecipeCount] = useState(0);
     const [currentRecipe, setCurrentRecipe] = useState<any>(null);
     const [isUpdatingRecipe, setIsUpdatingRecipe] = useState(false);
     const [recipeError, setRecipeError] = useState<string | null>(null);
@@ -236,7 +235,6 @@ function SelectMealsContent() {
                 if (!plan?.generation_id) throw new Error('The server did not return a valid meal plan.');
                 savePlan(plan);
                 setPlanResponse(plan);
-                setAcceptedRecipeCount(plan.accepted_recipe_count);
                 if (plan.status === 'CANCELLED') throw new Error('This plan has been cancelled.');
                 if (isCompletedPlan(plan)) return;
 
@@ -273,7 +271,7 @@ function SelectMealsContent() {
                             Pick your recipes
                         </Text>
                         <Text className="text-sm leading-6 text-studio-muted">
-                            {planResponse ? `${acceptedRecipieCount} out of ${planResponse.required_recipe_count}` : 'Loading...'}
+                            {planResponse ? `${planResponse.accepted_recipe_count} out of ${planResponse.required_recipe_count}` : 'Loading...'}
                         </Text>
                     </View>
 
@@ -290,10 +288,7 @@ function SelectMealsContent() {
                                         accessibilityState={{ disabled: isUpdatingRecipe }}
                                         activeOpacity={0.75}
                                         disabled={isUpdatingRecipe}
-                                        onPress={() => {
-                                            updateRecipe('accept');
-                                            setAcceptedRecipeCount(acceptedRecipieCount + 1 < planResponse.required_recipe_count ? acceptedRecipieCount + 1 : acceptedRecipieCount);
-                                        }}
+                                        onPress={() => { void updateRecipe('accept'); }}
                                         className="bg-studio-primary w-20 h-20 rounded-full items-center justify-center shadow-sm"
                                     >
                                         <Ionicons name="checkmark" size={28} color="white" />
@@ -361,27 +356,18 @@ function SelectMealsContent() {
                             ) : null}
                         </View>
                     )}
-                    {isPlanComplete && !isUpdatingRecipe && <View className="mt-5">
-                        <SetupContinueButton
-                            href={{ pathname: '/(app)/(tabs)/plan', params: { generationId: planResponse.generation_id } }}
-                            label="View groceries"
-                        />
-                    </View>}
                 </ScrollView>
 
-                {/* Finalize Button */}
-                <SetupFooter>
+                {isPlanComplete && !isUpdatingRecipe && <SetupFooter>
                     <SetupContinueButton
                         href={{
                             pathname: "/(app)/(tabs)/home",
                             params: { generationId: planResponse?.generation_id },
                         }}
-                        label="View my plan"
-                        disabled={isUpdatingRecipe || !isPlanComplete}
-                        onPress={() => console.log('Finalize button pressed')}
+                        label="Confirm plan"
                         replace={true}
                     />
-                </SetupFooter>
+                </SetupFooter>}
             </SafeAreaView>
         </SafeAreaProvider>
     )

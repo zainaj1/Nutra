@@ -54,7 +54,7 @@ beforeEach(() => {
 });
 afterEach(async () => { await cleanup(); });
 
-it('resumes a completed plan by URL and offers groceries with the same plan ID', async () => {
+it('resumes a completed plan by URL and offers confirmation with the same plan ID', async () => {
     jest.mocked(useLocalSearchParams).mockReturnValue({ generationId: 'linked/plan' });
     jest.mocked(authenticatedFetch).mockResolvedValue(response({ ...plan, generation_id: 'linked/plan',
         accepted_recipe_count: 6, status: 'COMPLETED' }));
@@ -63,8 +63,9 @@ it('resumes a completed plan by URL and offers groceries with the same plan ID',
     expect(authenticatedFetch).toHaveBeenCalledTimes(1);
     expect(authenticatedFetch).toHaveBeenCalledWith(getToken, `${baseUrl}/linked%2Fplan`);
     expect(mockContinueButton).toHaveBeenCalledWith(expect.objectContaining({
-        label: 'View groceries', href: { pathname: '/(app)/(tabs)/plan', params: { generationId: 'linked/plan' } },
+        label: 'Confirm plan', href: { pathname: '/(app)/(tabs)/home', params: { generationId: 'linked/plan' } }, replace: true,
     }));
+    expect(mockContinueButton).not.toHaveBeenCalledWith(expect.objectContaining({ label: 'View groceries' }));
 });
 
 it('does not create a replacement when a linked plan is missing', async () => {
@@ -75,17 +76,22 @@ it('does not create a replacement when a linked plan is missing', async () => {
     expect(authenticatedFetch).toHaveBeenCalledTimes(1);
 });
 
-it('offers groceries after accepting the final recipe and refreshing the plan', async () => {
+it('only offers confirmation after accepting the final recipe and refreshing the plan', async () => {
     const screen = await render(<SelectMeals />);
     await waitFor(() => expect(screen.getByText('Chicken')).toBeTruthy());
-    expect(mockContinueButton).not.toHaveBeenCalledWith(expect.objectContaining({ label: 'View groceries' }));
+    expect(mockContinueButton).not.toHaveBeenCalled();
+    let finishRefresh!: (value: Response) => void;
     jest.mocked(authenticatedFetch).mockResolvedValueOnce(response(null))
-        .mockResolvedValueOnce(response({ ...plan, status: 'COMPLETED', accepted_recipe_count: 6 }));
+        .mockReturnValueOnce(new Promise(resolve => { finishRefresh = resolve; }));
     await fireEvent.press(screen.getByRole('button', { name: 'Accept recipe' }));
+    expect(mockContinueButton).not.toHaveBeenCalled();
+    await act(async () => { finishRefresh(response({ ...plan, status: 'COMPLETED', accepted_recipe_count: 6 })); });
     await waitFor(() => expect(screen.getByText('All recipes accepted!')).toBeTruthy());
+    expect(screen.getByText('6 out of 6')).toBeTruthy();
     expect(mockContinueButton).toHaveBeenCalledWith(expect.objectContaining({
-        label: 'View groceries', href: { pathname: '/(app)/(tabs)/plan', params: { generationId: plan.generation_id } },
+        label: 'Confirm plan', href: { pathname: '/(app)/(tabs)/home', params: { generationId: plan.generation_id } }, replace: true,
     }));
+    expect(mockContinueButton).not.toHaveBeenCalledWith(expect.objectContaining({ label: 'View groceries' }));
 });
 
 it('starts only one plan while a slow initial request spans multiple renders', async () => {
