@@ -1,0 +1,18 @@
+{
+  "primary": "#3d7b50",
+  "dark": "#2e6240",
+  "soft": "#edf5ef",
+  "selected": "#e4f0e7",
+  "olive": "#9ca3af",
+  "leaf": "#7c9e50",
+  "cream": "#fafaf7",
+  "card": "#ffffff",
+  "border": "#e9ece6",
+  "textMain": "#1a2e1c",
+  "textMuted": "#6b7280",
+  "textOlive": "#4b7a57",
+  "orange": "#e8693a",
+  "yellow": "#f59e0b",
+  "purple": "#c084fc",
+  "planIcons": { "calories": "#e8693a", "protein": "#3d7b50", "carbs": "#7c9e50", "fat": "#f59e0b" }
+}

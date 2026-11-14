@@ -1,3 +1,6 @@
+import CandidatePreview from '@/components/design/candidate-preview';
+import { SetupFooter } from '@/components/design/setup-chrome';
+import setupColors from '@/constants/studio-colors.json';
 import { authenticatedFetch, SessionExpiredError } from '@/src/lib/authenticated-fetch';
 import { getPlanIntent, saveIntentPlan, type PlanRequirements } from '@/src/lib/plan-creation-intent';
 import { useAuth } from '@clerk/expo';
@@ -7,10 +10,13 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { setupColors } from '../../domain/setup-theme';
 import SetupContinueButton from './components/setup-continue-button';
 
 
+function isCompletedPlan(plan: any): boolean {
+    return plan?.status ? plan.status === 'COMPLETED'
+        : !!plan && plan.accepted_recipe_count >= plan.required_recipe_count;
+}
 
 function savePlan(planResponse: any) {
     try {
@@ -21,7 +27,7 @@ function savePlan(planResponse: any) {
 
         file.write(JSON.stringify({
             "plan-id": planResponse["generation_id"],
-            planSetup: planResponse.accepted_recipe_count >= planResponse.required_recipe_count,
+            planSetup: isCompletedPlan(planResponse),
         }));
     } catch (error) {
         console.error('Error saving user data:', error);
@@ -107,6 +113,12 @@ function loadPlanOnce(
 }
 
 export default function SelectMeals() {
+    const { generationId } = useLocalSearchParams<{ generationId?: string }>();
+    const { userId } = useAuth();
+    return <SelectMealsContent key={JSON.stringify([userId, generationId])} />;
+}
+
+function SelectMealsContent() {
     const params = useLocalSearchParams();
     const getParamValue = (value: string | string[] | undefined) => (
         Array.isArray(value) ? value[0] : value
@@ -114,6 +126,7 @@ export default function SelectMeals() {
     const cookDayCount = Number(getParamValue(params.cookDayCount));
     const people = Number(getParamValue(params.people));
     const meals = getParamValue(params.meals) || '';
+    const generationId = getParamValue(params.generationId);
 
     const { getToken, isLoaded, isSignedIn, userId } = useAuth();
     const initializationStarted = useRef(false);
@@ -124,7 +137,7 @@ export default function SelectMeals() {
     const recipeRequestInFlight = useRef(false);
     const [needsRefresh, setNeedsRefresh] = useState(false);
     const pendingRefresh = useRef<{ nextRecipe: any } | null>(null);
-    const isPlanComplete = planResponse && planResponse.accepted_recipe_count >= planResponse.required_recipe_count;
+    const isPlanComplete = isCompletedPlan(planResponse);
     async function refreshPlan(url: string) {
         const planResult = await authenticatedFetch(getToken, url);
         if (!planResult.ok) {
@@ -134,7 +147,7 @@ export default function SelectMeals() {
         savePlan(updatedPlan);
         setPlanResponse(updatedPlan);
         setCurrentRecipe(
-            updatedPlan.accepted_recipe_count >= updatedPlan.required_recipe_count
+            isCompletedPlan(updatedPlan)
                 ? null
                 : pendingRefresh.current?.nextRecipe ?? null
         );
@@ -149,7 +162,7 @@ export default function SelectMeals() {
         setIsUpdatingRecipe(true);
         setRecipeError(null);
         try {
-            const url = `http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/plan_generations/${planResponse.generation_id}`;
+            const url = `http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/plan_generations/${encodeURIComponent(planResponse.generation_id)}`;
             const response = await authenticatedFetch(getToken, `${url}/candidates/${action}`, {
                 method: 'POST',
             });
@@ -169,10 +182,10 @@ export default function SelectMeals() {
                 error instanceof SessionExpiredError
                     ? error.message
                     : pendingRefresh.current
-                    ? 'Your recipe was updated, but we could not load your plan. Refresh to continue.'
-                    : error instanceof TypeError
-                        ? 'Could not connect to the recipe service. Check your connection and try again.'
-                        : 'Could not update your recipe. Please try again.'
+                        ? 'Your recipe was updated, but we could not load your plan. Refresh to continue.'
+                        : error instanceof TypeError
+                            ? 'Could not connect to the recipe service. Check your connection and try again.'
+                            : 'Could not update your recipe. Please try again.'
             );
         } finally {
             recipeRequestInFlight.current = false;
@@ -186,7 +199,7 @@ export default function SelectMeals() {
         setIsUpdatingRecipe(true);
         setRecipeError(null);
         try {
-            const url = `http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/plan_generations/${planResponse.generation_id}`;
+            const url = `http://${process.env.EXPO_PUBLIC_ADDRESS}:8000/api/plan_generations/${encodeURIComponent(planResponse.generation_id)}`;
             await refreshPlan(url);
         } catch (error) {
             setRecipeError(error instanceof SessionExpiredError
@@ -207,7 +220,14 @@ export default function SelectMeals() {
 
         async function initializePlan() {
             try {
-                const plan = await loadPlanOnce(getToken, baseUrl, userId, {
+                // Direct links resume this exact plan without creating a new intent.
+                const loadRequestedPlan = async () => {
+                    const response = await authenticatedFetch(getToken, `${baseUrl}/${encodeURIComponent(generationId!)}`);
+                    if (!response.ok) throw new Error(await responseError(response, 'This plan is unavailable.'));
+                    const data = await response.json();
+                    return { ...data, generation_id: generationId };
+                };
+                const plan = generationId ? await loadRequestedPlan() : await loadPlanOnce(getToken, baseUrl, userId, {
                     cook_days: cookDayCount,
                     number_of_people: people,
                     meals: ['breakfast', 'lunch', 'dinner', 'dessert'].filter(meal => meals.includes(meal)),
@@ -215,9 +235,10 @@ export default function SelectMeals() {
                 if (!plan?.generation_id) throw new Error('The server did not return a valid meal plan.');
                 savePlan(plan);
                 setPlanResponse(plan);
-                if (plan.accepted_recipe_count >= plan.required_recipe_count) return;
+                if (plan.status === 'CANCELLED') throw new Error('This plan has been cancelled.');
+                if (isCompletedPlan(plan)) return;
 
-                const response = await authenticatedFetch(getToken, `${baseUrl}/${plan.generation_id}/candidates`, {
+                const response = await authenticatedFetch(getToken, `${baseUrl}/${encodeURIComponent(plan.generation_id)}/candidates`, {
                     method: 'POST',
                 });
                 if (!response.ok) {
@@ -232,12 +253,12 @@ export default function SelectMeals() {
             }
         }
         void initializePlan();
-    }, [isLoaded, isSignedIn, userId, getToken, cookDayCount, people, meals]);
+    }, [isLoaded, isSignedIn, userId, getToken, cookDayCount, people, meals, generationId]);
 
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 bg-setup-cream">
+            <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-studio-cream">
                 <ScrollView
                     className="flex-1"
                     contentContainerClassName="px-5 pt-4 pb-6"
@@ -245,27 +266,20 @@ export default function SelectMeals() {
                 >
 
                     {/* Header Text */}
-                    <View className="items-center mb-6">
-                        <Text className="text-3xl font-bold text-setup-main mb-2 text-center">
+                    <View className="items-start mb-6">
+                        <Text className="text-3xl font-bold text-studio-main mb-2 tracking-tight">
                             Pick your recipes
                         </Text>
-                        <Text className="text-sm text-setup-muted text-center">
+                        <Text className="text-sm leading-6 text-studio-muted">
                             {planResponse ? `${planResponse.accepted_recipe_count} out of ${planResponse.required_recipe_count}` : 'Loading...'}
                         </Text>
                     </View>
 
                     {
                         currentRecipe && !isUpdatingRecipe ? (
-                            <View className="min-h-80 flex-col rounded-2xl bg-setup-card items-center justify-center border border-setup-border px-5 py-6">
-                                <View>
-                                    <Text>{currentRecipe.name}</Text>
-                                    <Text>Cook time: {currentRecipe.cookingDetails.cookTime}</Text>
-                                    <Text>Difficulty: {currentRecipe.cookingDetails.difficulty}</Text>
-                                    <Text>Calories: {currentRecipe.nutritionPerServing.calories}</Text>
-                                    <Text>Carbohydrates: {currentRecipe.nutritionPerServing.carbohydrates}</Text>
-                                    <Text>Fat: {currentRecipe.nutritionPerServing.fat}</Text>
-                                    <Text>Protein: {currentRecipe.nutritionPerServing.protein}</Text>
-                                </View>
+                            <View className="flex-col items-center justify-center">
+                                <CandidatePreview key={currentRecipe.recipe_id} recipe={currentRecipe} />
+                                <Text className="text-xs text-studio-muted mt-5">Keep what you love. We’ll find another for the rest.</Text>
                                 <View className="flex-row gap-8 mt-6">
 
                                     <TouchableOpacity
@@ -274,8 +288,8 @@ export default function SelectMeals() {
                                         accessibilityState={{ disabled: isUpdatingRecipe }}
                                         activeOpacity={0.75}
                                         disabled={isUpdatingRecipe}
-                                        onPress={() => updateRecipe('accept')}
-                                        className="bg-setup-primary w-20 h-20 rounded-full items-center justify-center shadow-sm"
+                                        onPress={() => { void updateRecipe('accept'); }}
+                                        className="bg-studio-primary w-20 h-20 rounded-full items-center justify-center shadow-sm"
                                     >
                                         <Ionicons name="checkmark" size={28} color="white" />
                                         <Text className="text-white text-xs font-semibold">Accept</Text>
@@ -288,29 +302,29 @@ export default function SelectMeals() {
                                         activeOpacity={0.75}
                                         disabled={isUpdatingRecipe}
                                         onPress={() => updateRecipe('reject')}
-                                        className="bg-red-600 w-20 h-20 rounded-full items-center justify-center shadow-sm"
+                                        className="bg-white border border-studio-border w-20 h-20 rounded-full items-center justify-center shadow-sm"
                                     >
-                                        <Ionicons name="close" size={28} color="white" />
-                                        <Text className="text-white text-xs font-semibold">Reject</Text>
+                                        <Ionicons name="close" size={28} color="#e8693a" />
+                                        <Text className="text-studio-muted text-xs font-semibold">Skip</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
                         ) : (
                             <View
-                                className="min-h-80 rounded-2xl bg-setup-card items-center justify-center border border-setup-border px-5 py-6"
+                                className="min-h-80 rounded-2xl bg-studio-card items-center justify-center border border-studio-border px-5 py-6"
                                 accessibilityLiveRegion="polite"
                                 accessibilityState={{ busy: isUpdatingRecipe || (!isPlanComplete && !recipeError) }}
                             >
                                 {(isUpdatingRecipe || (!isPlanComplete && !recipeError)) && (
-                                    <View className="w-20 h-20 rounded-full bg-setup-soft items-center justify-center mb-4">
+                                    <View className="w-20 h-20 rounded-full bg-studio-soft items-center justify-center mb-4">
                                         <ActivityIndicator size="large" color={setupColors.primary} />
                                     </View>
                                 )}
-                                <Text className="text-lg font-semibold text-setup-main text-center">
+                                <Text className="text-lg font-semibold text-studio-main text-center">
                                     {isUpdatingRecipe ? 'Preparing your next recipe...' : isPlanComplete ? 'All recipes accepted!' : recipeError ? 'Recipe unavailable.' : 'Loading your recipes...'}
                                 </Text>
                                 {(isUpdatingRecipe || (!isPlanComplete && !recipeError)) && (
-                                    <Text className="text-sm text-setup-muted text-center mt-2">
+                                    <Text className="text-sm leading-6 text-studio-muted mt-2">
                                         This may take a moment. Your recipe will appear here when it’s ready.
                                     </Text>
                                 )}
@@ -344,19 +358,16 @@ export default function SelectMeals() {
                     )}
                 </ScrollView>
 
-                {/* Finalize Button */}
-                <View className="px-5 pt-3 pb-4">
+                {isPlanComplete && !isUpdatingRecipe && <SetupFooter>
                     <SetupContinueButton
                         href={{
                             pathname: "/(app)/(tabs)/home",
                             params: { generationId: planResponse?.generation_id },
                         }}
-                        label="Pick my Recipes"
-                        disabled={isUpdatingRecipe || !isPlanComplete}
-                        onPress={() => console.log('Finalize button pressed')}
+                        label="Confirm plan"
                         replace={true}
                     />
-                </View>
+                </SetupFooter>}
             </SafeAreaView>
         </SafeAreaProvider>
     )

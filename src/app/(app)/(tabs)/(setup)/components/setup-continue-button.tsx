@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Link, type Href } from 'expo-router';
 import { Text, TouchableOpacity } from 'react-native';
 
@@ -23,7 +24,7 @@ export default function SetupContinueButton({
             <TouchableOpacity
                 activeOpacity={0.85}
                 className={
-                    "bg-setup-primary rounded-full py-4 items-center justify-center shadow-sm " +
+                    "bg-studio-primary rounded-2xl py-4 flex-row gap-3 items-center justify-center shadow-sm " +
                     (disabled ? "opacity-50" : "opacity-100")
                 }
                 disabled={disabled}
@@ -32,9 +33,10 @@ export default function SetupContinueButton({
                 accessibilityState={{ disabled }}
                 onPress={onPress}
             >
-                <Text className="text-white font-bold text-lg">
+                <Text className="text-white font-bold text-base">
                     {label}
                 </Text>
+                <Ionicons name="arrow-forward" size={19} color="white" />
             </TouchableOpacity>
         </Link>
     );

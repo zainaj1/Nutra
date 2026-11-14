@@ -18,6 +18,7 @@ export default function Layout() {
         <Stack>
             <Stack.Protected guard={isSignedIn}>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="pantry" options={{ headerShown: false }} />
             </Stack.Protected>
 
             <Stack.Protected guard={!isSignedIn}>

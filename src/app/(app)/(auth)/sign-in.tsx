@@ -1,9 +1,9 @@
+import AuthPage from '@/components/design/auth-page';
 import { useSignIn } from '@clerk/expo'
 import { Ionicons } from '@expo/vector-icons'
 import { type Href, Link, useRouter } from 'expo-router'
 import React from 'react'
 import { Dimensions, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
 import GoogleSignInButton from '../../components/GoogleSignInButton'
 
 export default function Page() {
@@ -25,8 +25,6 @@ export default function Page() {
     const [code, setCode] = React.useState('')
 
     const handleSubmit = async () => {
-        // TODO: Remove line
-        console.log("Email: ", emailAddress, ", Password: ", password)
 
 
         const { error } = await signIn.password({
@@ -107,7 +105,7 @@ export default function Page() {
 
     if (signIn.status === 'needs_client_trust' || signIn.status === 'needs_second_factor') {
         return (
-            <SafeAreaProvider className="flex-1 p-5 gap-3">
+            <AuthPage>
                 <Text className="text-2xl font-bold mb-4 py-3 px-6">
                     Verify your account
                 </Text>
@@ -123,7 +121,7 @@ export default function Page() {
                     <Text className="text-red-600 text-xs -mt-2">{errors.fields.code.message}</Text>
                 )}
                 <Pressable
-                    className={`bg-blue-600 py-3 px-6 rounded-lg items-center mt-2 ${fetchStatus === 'fetching' ? 'opacity-50' : ''
+                    className={`bg-studio-primary py-3 px-6 rounded-lg items-center mt-2 ${fetchStatus === 'fetching' ? 'opacity-50' : ''
                         }`}
                     onPress={handleVerify}
                     disabled={fetchStatus === 'fetching'}
@@ -132,7 +130,7 @@ export default function Page() {
                 </Pressable>
                 <Pressable className="py-3 px-6 rounded-lg items-center mt-2">
                     <Text
-                        className="text-blue-600 font-semibold"
+                        className="text-studio-primary font-semibold"
                         onPress={() => signIn.mfa.sendEmailCode()}
                     >
                         I need a new code
@@ -140,19 +138,19 @@ export default function Page() {
                 </Pressable>
                 <Pressable className="py-3 px-6 rounded-lg items-center mt-2">
                     <Text
-                        className="text-blue-600 font-semibold"
+                        className="text-studio-primary font-semibold"
                         onPress={() => signIn.reset()}
                     >
                         Start over
                     </Text>
                 </Pressable>
-            </SafeAreaProvider>
+            </AuthPage>
         )
     }
 
     return (
-        <SafeAreaProvider className="flex-1">
-            <View className="flex-1 px-6">
+        <AuthPage>
+            <View className="flex-1">
 
                 {/* Header Section */}
 
@@ -160,13 +158,13 @@ export default function Page() {
 
                     {/* Logo */}
                     <View className="items-center mb-6" style={{ flexShrink: 1 }}>
-                        <View className="w-20 h-15 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl items-center justify-center mb-2 shadow-lg">
+                        <View className="w-20 h-20 bg-studio-primary rounded-2xl items-center justify-center mb-2 shadow-sm">
                             <Ionicons name="restaurant-outline" size={iconSize} color="white" />
                         </View>
-                        <Text className="text-3xl font-bold text-gray-900 mb-2">
+                        <Text className="text-3xl font-bold text-studio-main mb-2">
                             Nutra
                         </Text>
-                        <Text className="text-lg text-gray-600 text-center">
+                        <Text className="text-lg text-studio-muted text-center">
                             A nutrition and meal planning app{"\n"} to help you stay on track
                         </Text>
                     </View>
@@ -174,15 +172,15 @@ export default function Page() {
                     {/* Sign-in Form Section */}
                     <KeyboardAvoidingView
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                        className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6" style={{ flexShrink: 1 }}
+                        className="bg-white rounded-3xl p-6 shadow-sm border border-studio-border mb-6" style={{ flexShrink: 1 }}
                     >
 
                         {/* Email input */}
                         <View className="mb-4">
-                            <Text className="text-sm font-medium text-gray-700 mb-2">
+                            <Text className="text-sm font-medium text-studio-main mb-2">
                                 Email
                             </Text>
-                            <View className="flex-row items-center bg-gray-50 rounded-xl px-4 py-4 border border-gray-200">
+                            <View className="flex-row items-center bg-studio-cream rounded-xl px-4 py-4 border border-studio-border">
                                 <Ionicons name="mail-outline" size={20} color="#6B7280" />
                                 <TextInput
                                     autoCapitalize="none"
@@ -191,7 +189,7 @@ export default function Page() {
                                     placeholderTextColor="#9CA3AF"
                                     onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
                                     keyboardType="email-address"
-                                    className="flex-1 ml-3 text-gray-900"
+                                    className="flex-1 ml-3 text-studio-main"
                                     editable={!isLoading}
                                 />
                             </View>
@@ -203,10 +201,10 @@ export default function Page() {
 
                         {/* Password input */}
                         <View className="mb-6">
-                            <Text className="text-sm font-medium text-gray-700 mb-2">
+                            <Text className="text-sm font-medium text-studio-main mb-2">
                                 Password
                             </Text>
-                            <View className="flex-row items-center bg-gray-50 rounded-xl px-4 py-4 border border-gray-200">
+                            <View className="flex-row items-center bg-studio-cream rounded-xl px-4 py-4 border border-studio-border">
                                 <Ionicons name="lock-closed-outline" size={20} color="#6B7280" />
                                 <TextInput
                                     value={password}
@@ -214,7 +212,7 @@ export default function Page() {
                                     placeholderTextColor="#9CA3AF"
                                     secureTextEntry={true}
                                     onChangeText={(password) => setPassword(password)}
-                                    className="flex-1 ml-3 text-gray-900"
+                                    className="flex-1 ml-3 text-studio-main"
                                     editable={!isLoading}
                                 />
                             </View>
@@ -229,7 +227,7 @@ export default function Page() {
                     <TouchableOpacity
                         onPress={handleSubmit}
                         disabled={isLoading}
-                        className={"rounded-xl py-4 px-4 shadow-sm mb-2 " + (isLoading ? "bg-gray-400" : "bg-blue-600")}
+                        className={"rounded-xl py-4 px-4 shadow-sm mb-2 " + (isLoading ? "bg-gray-400" : "bg-studio-primary")}
                         activeOpacity={0.8}
                     >
                         <View className="flex-row items-center justify-center">
@@ -255,9 +253,9 @@ export default function Page() {
                     <GoogleSignInButton />
 
                     <Text className=" text-sm text-gray-500 text-center mt-4">
-                        Don't have an account?{' '}
+                        Don&apos;t have an account?{' '}
                         <Link href="/sign-up">
-                            <Text className="text-blue-600 font-semibold pb-6">
+                            <Text className="text-studio-primary font-semibold pb-6">
                                 Sign up
                             </Text>
                         </Link>
@@ -273,6 +271,6 @@ export default function Page() {
                 </View>
 
             </View>
-        </SafeAreaProvider >
+        </AuthPage>
     )
 }

@@ -1,3 +1,4 @@
+import { PageHeading, SetupFooter } from '@/components/design/setup-chrome';
 import { useAuth } from '@clerk/expo';
 import { useState } from 'react';
 import {
@@ -8,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { setupColors } from '../../domain/setup-theme';
+import setupColors from '@/constants/studio-colors.json';
 import ActivityButton from './components/activity-button';
 import GenderButton from './components/gender-button';
 import HeightPicker from './components/height-picker';
@@ -50,7 +51,7 @@ export default function UserMetrics() {
 
     if (!isLoaded) {
         return (
-            <View className="flex-1 items-center justify-center bg-setup-cream">
+            <View className="flex-1 items-center justify-center bg-studio-cream">
                 <ActivityIndicator size="large" color={setupColors.primary} />
             </View>
         );
@@ -58,22 +59,14 @@ export default function UserMetrics() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 bg-setup-cream">
+            <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-studio-cream">
                 <ScrollView
                     className="flex-1"
                     contentContainerClassName="px-5 pt-4 pb-6"
                     showsVerticalScrollIndicator={false}
                 >
                     {/* Header */}
-                    <View className="items-center mb-6">
-                        <Text className="text-3xl font-bold text-setup-main mb-2 text-center">
-                            Tell us about yourself
-                        </Text>
-
-                        <Text className="text-sm text-setup-muted text-center">
-                            We will use this to personalize your plan.
-                        </Text>
-                    </View>
+                    <PageHeading title="A little about you" subtitle="A few details to make your plan feel like you." />
 
                     {/* Picker Boxes */}
                     <View className="flex-row items-center justify-between gap-2 mb-6">
@@ -103,7 +96,7 @@ export default function UserMetrics() {
 
                     {/* Gender */}
                     <View className="mb-6">
-                        <Text className="px-1 text-lg font-bold text-setup-main mb-3">
+                        <Text className="px-1 text-xs tracking-widest uppercase font-semibold text-studio-muted mb-3">
                             Gender
                         </Text>
                         <View className="flex-row items-center justify-between gap-2">
@@ -133,7 +126,7 @@ export default function UserMetrics() {
 
                     {/* Activity Level */}
                     <View className="mb-2">
-                        <Text className="px-1 text-lg font-bold text-setup-main mb-3">
+                        <Text className="px-1 text-xs tracking-widest uppercase font-semibold text-studio-muted mb-3">
                             Activity Level
                         </Text>
 
@@ -173,7 +166,7 @@ export default function UserMetrics() {
                     </View>
 
                 </ScrollView>
-                <View className="px-5 pt-3 pb-4">
+                <SetupFooter>
                     <SetupContinueButton
                         href={{
                             pathname: "/(app)/(tabs)/(setup)/user-goals",
@@ -187,7 +180,7 @@ export default function UserMetrics() {
                         }}
                         disabled={!canContinue}
                     />
-                </View>
+                </SetupFooter>
             </SafeAreaView>
         </SafeAreaProvider>
     );
